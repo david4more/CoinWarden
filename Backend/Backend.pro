@@ -5,8 +5,11 @@ TARGET = Backend
 QT += core sql network
 
 SOURCES += backend.cpp \
+    Modules/transaction.cpp \
     model.cpp
 HEADERS += backend.h \
-    currency.h \
-    model.h \
-    transaction.h
+    Modules/account.h \
+    Modules/category.h \
+    Modules/currency.h \
+    Modules/transaction.h \
+    model.h

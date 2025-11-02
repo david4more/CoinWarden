@@ -37,10 +37,6 @@ void MainWindow::setupUI()
     });
     connect(ui->categoryFilterButton, &QToolButton::clicked, this, &MainWindow::onCategoryFilterButton);
 
-    backend = new Backend(this);
-    connect(backend, &Backend::message, this, [this](QString newStatus){ QMessageBox::critical(this, "Error", newStatus); });
-    backend->init();
-
     model = new TransactionModel(ui->centralwidget);
     proxy = new TransactionProxy(ui->centralwidget);
     proxy->setSourceModel(model);
@@ -122,7 +118,7 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     // prepare x axis with country labels:
     QVector<double> ticks;
     QVector<QString> labels;
-    auto data = backend->getCategories();
+    auto data = backend.categories().names();
     for (int i = 0; i < data.size(); ++i) {
         ticks << i + 1;
         labels << data[i];
@@ -145,7 +141,7 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     // prepare y axis:
     plot->yAxis->setRange(0, 12.1);
     plot->yAxis->setPadding(5); // a bit more space to the left border
-    plot->yAxis->setLabel("Expense per category\nin " + backend->defCurrency());
+    plot->yAxis->setLabel("Expense per category\nin " + backend.currencies().def());
     plot->yAxis->setBasePen(QPen(Qt::white));
     plot->yAxis->setTickPen(QPen(Qt::white));
     plot->yAxis->setSubTickPen(QPen(Qt::white));
@@ -185,7 +181,7 @@ void MainWindow::onApplyCustomFilters()
 void MainWindow::updateTransactions()
 {
     ui->monthButton->setText(start.toString("MMMM yyyy"));
-    model->setTransactions(backend->getTransactions(start, finish));
+    model->setTransactions(backend.transactions().get(start, finish));
 }
 
 void MainWindow::onCategoryFilterButton()
@@ -193,7 +189,7 @@ void MainWindow::onCategoryFilterButton()
     QDialog* dialog = new QDialog(this);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
 
-    for (const auto& item : backend->getCategories()) {
+    for (const auto& item : backend.categories().names()) {
         QCheckBox* box = new QCheckBox(item, dialog);
         box->setChecked(pickedCategories.contains(item));
         layout->addWidget(box);
@@ -235,9 +231,9 @@ void MainWindow::updateData()
         box->clear();
         for (const auto& x : list) box->addItem(x);
     };
-    updateCombo(ui->tCurrency, backend->getCurrencies());
-    updateCombo(ui->tAccount, backend->getAccounts());
-    updateCombo(ui->tCategory, backend->getCategories());
+    updateCombo(ui->tCurrency, backend.currencies().codes());
+    updateCombo(ui->tAccount, backend.accounts().names());
+    updateCombo(ui->tCategory, backend.categories().names());
 }
 
 void MainWindow::onAddTransaction()
@@ -255,7 +251,7 @@ void MainWindow::onAddTransaction()
         return;
     }
 
-    backend->newTransaction(std::move(t));
+    backend.transactions().add(std::move(t));
 
     updateTransactions();
     changePage(Page::transactions);

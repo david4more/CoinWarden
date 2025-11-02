@@ -2,14 +2,14 @@
 
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
-#include "transaction.h"
+#include "Modules/transaction.h"
 
 class TransactionModel : public QAbstractTableModel
 {
     Q_OBJECT
     QVector<Transaction> transactions;
 public:
-    explicit TransactionModel(QObject* parent = nullptr) : QAbstractTableModel(parent) {}
+    explicit TransactionModel(QObject* parent) : QAbstractTableModel(parent) {}
 
     void setTransactions(QVector<Transaction>&& t);
     int rowCount(const QModelIndex&) const override { return transactions.size(); }
@@ -24,7 +24,7 @@ class TransactionProxy : public QSortFilterProxyModel {
     bool useCategoryFilter = false, useMinFilter = false, useMaxFilter = false;
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 public:
-    explicit TransactionProxy(QObject* parent = nullptr) : QSortFilterProxyModel(parent) {}
+    explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) {}
 
     struct Filters {
         bool enabled = true;

@@ -1,7 +1,6 @@
 #include "model.h"
 
 
-
 // Transaction proxy methods
 
 bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
