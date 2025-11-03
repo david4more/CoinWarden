@@ -11,6 +11,7 @@ SOURCES += backend.cpp \
     model.cpp
 HEADERS += backend.h \
     Modules/account.h \
+    Modules/c.h \
     Modules/category.h \
     Modules/currency.h \
     Modules/t.h \

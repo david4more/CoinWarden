@@ -41,7 +41,7 @@ private:
     void onFirstLaunch();
 
     // helpers
-    QVector<double> smoothGraph(const QVector<double>& x, const QVector<double>& data);
+    QVector<double> smoothGraph(const QVector<double>& data, const QVector<double>& x);
     void updateTransactions();
     void updateData();
     void setupFinancesPlot(QCustomPlot *customPlot);
@@ -50,4 +50,17 @@ private:
     void changePage(Page p);
     void highlightField(QWidget* widget, bool condition);
     void clearTransactionForm();
+
+    void connectSlots();
+    void setupTransactionsTable();
+    void setupButtonGroups();
 };
+
+
+
+
+
+
+
+
+

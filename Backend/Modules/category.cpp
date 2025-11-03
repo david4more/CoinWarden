@@ -1,9 +1,26 @@
 #include "category.h"
+#include "c.h"
 #include "pch.h"
 
 const QString CategoriesManager::defaultColor = "00ff00";
 
-QStringList CategoriesManager::names() const
+QVector<Category> CategoriesManager::get() const
+{
+    QSqlQuery query(db);
+
+    query.prepare("SELECT name, color, isExpense FROM categories");
+
+    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
+
+    QVector<Category> ret;
+
+    while (query.next())
+        ret.push_back(Category{query.value(0).toString(), query.value(1).toString(), query.value(2).toBool()});
+
+    return ret;
+}
+
+QStringList CategoriesManager::getNames() const
 {
     QSqlQuery query(db);
 
@@ -25,29 +42,34 @@ bool CategoriesManager::setupDefault()
     if (!query.exec()) { qDebug() << "Failed to execute query"; return false; }
     if (query.next()) { qDebug() << "Setup of non-empty table"; return false; }
 
-    return add({"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"});
-}
-
-bool CategoriesManager::add(QStringList names, QString color)
-{
-    QSqlQuery query(db);
-
     if (!db.transaction()) { qDebug() << "Failed to initialize a transaction"; return false; }
 
-    query.prepare("INSERT INTO categories (name, color) VALUES (:name, :color)");
-    for (const auto& name : names) {
-        query.bindValue(":name", name);
-        query.bindValue(":color", color);
-        if (!query.exec()) { qDebug() << "Failed to execute query"; db.rollback(); return false; }
-    }
+    qDebug() << "1";
+    for (auto n : {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"})
+        if (!add(n, true)) { db.rollback(); return false; }
+
+    //for (auto n : { "Salary", "Help", "Bonuses", "Gifts" })
+        //if (!add(n, false)) { db.rollback(); return false; }
 
     if (!db.commit()) { qDebug() << "Failed to commit transaction"; return false; }
+
     return true;
 }
 
-bool CategoriesManager::add(QString name, QString color)
+bool CategoriesManager::add(QString name, bool isExpense, QString color)
 {
-    return add({name}, color);
+    QSqlQuery query(db);
+
+    qDebug() << "2";
+    query.prepare("INSERT INTO categories (name, color, isExpense) VALUES (:name, :color, :isExpense)");
+
+    query.bindValue(":name", name);
+    query.bindValue(":color", color);
+    query.bindValue(":isExpense", isExpense);
+
+    if (!query.exec()) { qDebug() << "Failed to execute query"; return false; }
+
+    return true;
 }
 
 

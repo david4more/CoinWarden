@@ -1,10 +1,11 @@
 #pragma once
 
 class QSqlDatabase;
-
+class Category;
 const QString categoriesTable =
     "CREATE TABLE categories ("
     "name TEXT PRIMARY KEY, "
+    "isExpense BOOLEAN NOT NULL, "
     "color TEXT)";
 
 class CategoriesManager
@@ -14,8 +15,8 @@ class CategoriesManager
 
 public:
     explicit CategoriesManager(QSqlDatabase& db) : db(db) {}
-    QStringList names() const;
-    bool add(QStringList names, QString color = defaultColor);
-    bool add(QString name, QString color = defaultColor);
+    QVector<Category> get() const;
+    QStringList getNames() const;
+    bool add(QString name, bool isExpense, QString color = defaultColor);
     bool setupDefault();
 };

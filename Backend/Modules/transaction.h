@@ -19,6 +19,7 @@ const QString transactionsTable =
 class TransactionsManager
 {
     QSqlDatabase& db;
+    void normalizeMonthRange(QDate& from, QDate& to) const;
 
 public:
     TransactionsManager(QSqlDatabase& db) : db(db) {}
@@ -26,4 +27,5 @@ public:
     void add(const Transaction& t);
     QVector<Transaction> get(const QDate& from, const QDate& to) const;
     QVector<QPair<QString, double>> expensePerCategory(const QDate& from, const QDate& to) const;
+    QVector<QPair<QDate, double>> expensePerDay(const QDate& from, const QDate& to) const;
 };

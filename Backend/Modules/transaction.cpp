@@ -6,14 +6,13 @@
 void TransactionsManager::add(const Transaction& t)
 {
     QSqlQuery query(db);
-    query.prepare(
-        "INSERT INTO transactions (amount, currency, dateTime, category, account, note) "
-        "VALUES (:amount, :currency, :dateTime, :category, :account, :note)"
-        );
+
+    query.prepare("INSERT INTO transactions (amount, currency, dateTime, category, account, note) "
+                  "VALUES (:amount, :currency, :dateTime, :category, :account, :note)");
 
     query.bindValue(":amount", t.amount);
     query.bindValue(":currency", t.currency);
-    query.bindValue(":dateTime", t.dateTime);
+    query.bindValue(":dateTime", t.dateTime.toString(Qt::ISODate));
     query.bindValue(":category", t.category);
     query.bindValue(":account", t.account);
     query.bindValue(":note", t.note);
@@ -21,10 +20,29 @@ void TransactionsManager::add(const Transaction& t)
     if (!query.exec()) qDebug() << "Failed to execute query";
 }
 
+QVector<QPair<QDate, double>> TransactionsManager::expensePerDay(const QDate& from, const QDate& to) const
+{
+    QSqlQuery query(db);
+
+    query.prepare("SELECT date(t.dateTime) AS day, SUM(t.amount) AS total "
+                  "FROM transactions t "
+                  "WHERE date(t.dateTime) BETWEEN :from AND :to "
+                  "GROUP BY day "
+                  "ORDER BY day ASC;");
+
+    query.bindValue(":from", from.toString(Qt::ISODate));
+    query.bindValue(":to", to.toString(Qt::ISODate));
+
+    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
+
+    QVector<QPair<QDate, double>> expenses;
+    while (query.next()) expenses.push_back({ QDate::fromString(query.value(0).toString(), Qt::ISODate), query.value(1).toDouble() });
+
+    return expenses;
+}
+
 QVector<QPair<QString, double>> TransactionsManager::expensePerCategory(const QDate& from, const QDate& to) const
 {
-    QVector<QPair<QString, double>> expenses;
-
     QSqlQuery query(db);
 
     query.prepare("SELECT c.name, COALESCE(SUM(t.amount), 0) as amount "
@@ -38,21 +56,16 @@ QVector<QPair<QString, double>> TransactionsManager::expensePerCategory(const QD
     query.bindValue(":from", from.toString(Qt::ISODate));
     query.bindValue(":to", to.toString(Qt::ISODate));
 
-    if (!query.exec()) qDebug() << "Failed to execute query";
+    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
 
-    while (query.next()) {
-        QString category = query.value(0).toString();
-        double sum = query.value(1).toDouble();
-        expenses.push_back({category, sum});
-    }
+    QVector<QPair<QString, double>> expenses;
+    while (query.next()) expenses.push_back({ query.value(0).toString(), query.value(1).toDouble() });
 
     return expenses;
 }
 
 QVector<Transaction> TransactionsManager::get(const QDate& from, const QDate& to) const
 {
-    QVector<Transaction> transactions;
-
     QSqlQuery query(db);
 
     query.prepare("SELECT amount, currency, dateTime, category, account, note, id "
@@ -63,13 +76,14 @@ QVector<Transaction> TransactionsManager::get(const QDate& from, const QDate& to
     query.bindValue(":from", from.toString(Qt::ISODate));
     query.bindValue(":to", to.toString(Qt::ISODate));
 
-    if (!query.exec()) qDebug() << "Failed to execute query";
+    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
 
+    QVector<Transaction> transactions;
     while (query.next()) {
         Transaction t;
         t.amount    = query.value(0).toDouble();
         t.currency  = query.value(1).toString();
-        t.dateTime  = query.value(2).toString();
+        t.dateTime  = QDateTime::fromString(query.value(2).toString());
         t.category  = query.value(3).toString();
         t.account   = query.value(4).toString();
         t.note      = query.value(5).toString();
@@ -80,3 +94,24 @@ QVector<Transaction> TransactionsManager::get(const QDate& from, const QDate& to
 
     return transactions;
 }
+
+void TransactionsManager::normalizeMonthRange(QDate& from, QDate& to) const
+{
+    from = QDate(from.year(), from.month(), 1);
+    to = QDate(to.year(), to.month(), QDate(to.year(), to.month(), 1).daysInMonth());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
