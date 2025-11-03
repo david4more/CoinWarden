@@ -1,45 +1,33 @@
 #pragma once
 
-#include "Modules/transaction.h"
-#include "Modules/currency.h"
-#include "Modules/category.h"
-#include "Modules/account.h"
+#include <QObject>
 #include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QtDebug>
-#include <QNetworkAccessManager>
+class TransactionsManager;
+class CurrenciesManager;
+class CategoriesManager;
+class AccountsManager;
+class QSqlDatabase;
 
-class Backend
-{
+class Backend : public QObject {
+    Q_OBJECT
+
+signals:
+    void firstLaunch();
+
 public:
-    Backend();
-    TransactionsManager& transactions() { return *_transactions.data(); }
-    CurrenciesManager& currencies() { return *_currencies.data(); }
-    CategoriesManager& categories() { return *_categories.data(); }
-    AccountsManager& accounts() { return *_accounts.data(); }
+    Backend(QObject* parent) : QObject(parent) {}   // init() call after connecting signals required
+    ~Backend();
+    void init();
+
+    TransactionsManager* transactions() { return _transactions; }
+    CurrenciesManager* currencies() { return _currencies; }
+    AccountsManager* accounts() { return _accounts; }
+    CategoriesManager* categories() { return _categories; }
 
 private:
     QSqlDatabase db;
-    QNetworkAccessManager network;
-
-    QScopedPointer<TransactionsManager> _transactions;
-    QScopedPointer<CurrenciesManager> _currencies;
-    QScopedPointer<CategoriesManager> _categories;
-    QScopedPointer<AccountsManager> _accounts;
+    TransactionsManager* _transactions;
+    CurrenciesManager* _currencies;
+    AccountsManager* _accounts;
+    CategoriesManager* _categories;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,28 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "Modules/transaction.h"
+#include "Modules/currency.h"
+#include "Modules/category.h"
+#include "Modules/account.h"
+#include "../Backend/backend.h"
+#include "../Backend/model.h"
+#include "qcustomplot.h"
+#include <QTimer>
+#include <QButtonGroup>
+#include <QStyledItemDelegate>
+#include <QDialog>
+
+class TransactionDelegate : public QStyledItemDelegate
+{
+public:
+    explicit TransactionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
+        QStyleOptionViewItem opt(option);
+        opt.state &= ~QStyle::State_MouseOver;
+        QStyledItemDelegate::paint(painter, opt, index); }
+};
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -12,35 +34,37 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete backend;
+    delete model;
+    delete proxy;
 }
 
 void MainWindow::setupUI()
 {
-    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::home); });
-    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::transactions); });
-    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::settings); });
-    connect(ui->newTransactionButton, &QPushButton::clicked, this, [this]{ changePage(Page::newTransaction);});
-    connect(ui->customFilterButton, &QToolButton::clicked, this, [this]{ changePage(Page::customFilters);});
-    connect(ui->addTransactionButton, &QPushButton::clicked, this, &MainWindow::onAddTransaction);
-    connect(ui->applyCustomFiltersButton, &QPushButton::clicked, this, &MainWindow::onApplyCustomFilters);
-
-    connect(ui->prevMonthButton, &QToolButton::clicked, this, [&]{onMonthButton(false);});
-    connect(ui->nextMonthButton, &QToolButton::clicked, this, [&]{onMonthButton(true);});
-    connect(ui->noFilterButton, &QToolButton::clicked, this, [&]{
-        proxy->useFilters({.enabled = false});
-    });
-    connect(ui->expenseFilterButton, &QToolButton::clicked, this, [&]{
-        proxy->useFilters({.maxAmount = 0.f});
-    });
-    connect(ui->incomeFilterButton, &QToolButton::clicked, this, [&]{
-        proxy->useFilters({.minAmount = 0.f});
-    });
-    connect(ui->categoryFilterButton, &QToolButton::clicked, this, &MainWindow::onCategoryFilterButton);
+    backend = new Backend(this);
+    connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
+    backend->init();
 
     model = new TransactionModel(ui->centralwidget);
     proxy = new TransactionProxy(ui->centralwidget);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
+
+    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::home); });
+    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::transactions); });
+    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::settings); });
+    connect(ui->newTransactionButton, &QPushButton::clicked, this, [this]{ changePage(Page::newTransaction);});
+    connect(ui->addTransactionButton, &QPushButton::clicked, this, &MainWindow::onAddTransaction);
+    connect(ui->applyCustomFiltersButton, &QPushButton::clicked, this, &MainWindow::onApplyCustomFilters);
+
+    connect(ui->prevMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(false); });
+    connect(ui->nextMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(true); });
+    connect(ui->noFilterButton, &QToolButton::clicked, this, [&]{       proxy->useFilters({.enabled = false}); });
+    connect(ui->expenseFilterButton, &QToolButton::clicked, this, [&]{  proxy->useFilters({.maxAmount = 0.f}); });
+    connect(ui->incomeFilterButton, &QToolButton::clicked, this, [&]{   proxy->useFilters({.minAmount = 0.f}); });
+    connect(ui->categoryFilterButton, &QToolButton::clicked, this, &MainWindow::onCategoryFilterButton);
+    connect(ui->customFilterButton, &QToolButton::clicked, this, [this]{ changePage(Page::customFilters);});
+    connect(ui->dateButton, &QToolButton::clicked, this, [this]{ changePage(Page::customFilters);});
 
     ui->transactionsTable->resizeColumnsToContents();
     ui->transactionsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -51,8 +75,8 @@ void MainWindow::setupUI()
     ui->transactionsTable->setItemDelegate(new TransactionDelegate(ui->centralwidget));
 
     changePage(Page::home);
-    start = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
-    finish = start.addMonths(1);
+    from = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
+    to = from.addMonths(1);
     updateTransactions();
     updateData();
 
@@ -66,6 +90,48 @@ void MainWindow::setupUI()
 
     setupFinancesPlot(ui->financesPlot);
     setupCategoriesPlot(ui->categoriesPlot);
+}
+
+void MainWindow::onFirstLaunch()
+{
+    QDialog* dialog = new QDialog(this);
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QLabel* label = new QLabel("Welcome! Add a few categories to begin:", dialog);
+    QVector<QLineEdit*> lines;
+    lines.push_back(new QLineEdit(dialog));
+    QPushButton* add = new QPushButton("Add", dialog);
+    QPushButton* def = new QPushButton("Use default", dialog);
+    QPushButton* done = new QPushButton("Done", dialog);
+    layout->addWidget(label);
+    layout->addWidget(lines.back());
+    layout->addWidget(add);
+    layout->addWidget(def);
+    layout->addWidget(done);
+
+    connect(add, &QPushButton::clicked, dialog, [&]{ lines.push_back(new QLineEdit(dialog)); layout->insertWidget(lines.size() - 1, lines.back()); });
+    connect(done, &QPushButton::clicked, dialog, [&]{
+        QStringList cats;
+        for (auto l : lines)
+            if (!l->text().isEmpty())
+                cats << l->text();
+
+        if (cats.isEmpty()) {
+            label->setText("Unable to proceed without categories");
+            return;
+        }
+
+        for (auto c : cats){
+            qDebug() << c;
+            backend->categories()->add(c);
+        }
+
+        dialog->accept();
+    });
+    connect(def, &QPushButton::clicked, dialog, [&]{ backend->categories()->setupDefault(); dialog->accept(); });
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
+    dialog->exec();
 }
 
 void MainWindow::setupFinancesPlot(QCustomPlot *plot)
@@ -94,6 +160,7 @@ void MainWindow::setupFinancesPlot(QCustomPlot *plot)
     connect(plot->xAxis, SIGNAL(rangeChanged(QCPRange)), plot->xAxis2, SLOT(setRange(QCPRange)));
     connect(plot->yAxis, SIGNAL(rangeChanged(QCPRange)), plot->yAxis2, SLOT(setRange(QCPRange)));
     // pass data points to graphs:
+
     plot->graph(0)->setData(x, y0);
     plot->graph(1)->setData(x, y1);
     // let the ranges scale themselves so graph 0 fits perfectly in the visible area:
@@ -105,56 +172,51 @@ void MainWindow::setupFinancesPlot(QCustomPlot *plot)
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 }
 
+QVector<double> MainWindow::smoothGraph(const QVector<double>& x, const QVector<double>& data)
+{
+    return {};
+}
+
 void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
 {
     plot->setBackground(QBrush(QColor(30, 30, 30)));
 
-    // create empty bar chart objects:
     QCPBars *expenseBar = new QCPBars(plot->xAxis, plot->yAxis);
-
     expenseBar->setPen(QPen(QColor(Qt::red).darker(150), 2));
     expenseBar->setBrush(QBrush(QColor(Qt::red)));
 
-    // prepare x axis with country labels:
+    plot->xAxis->setBasePen(QPen(Qt::white));
+    plot->xAxis->setTickPen(QPen(Qt::white));
+    plot->xAxis->setTickLabelColor(Qt::white);
+    plot->xAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
+
+    plot->yAxis->setBasePen(QPen(Qt::white));
+    plot->yAxis->setTickPen(QPen(Qt::white));
+    plot->yAxis->setTickLabelColor(Qt::white);
+    plot->yAxis->setLabelColor(Qt::white);
+    plot->yAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
+
     QVector<double> ticks;
+    QVector<double> values;
     QVector<QString> labels;
-    auto data = backend.categories().names();
-    for (int i = 0; i < data.size(); ++i) {
+    auto data = backend->transactions()->expensePerCategory(from, to);
+
+    for (int i = 0; i < data.size(); ++i){
         ticks << i + 1;
-        labels << data[i];
+        labels << data[i].first;
+        values << data[i].second;
     }
+
+    expenseBar->setData(ticks, values);
 
     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
     textTicker->addTicks(ticks, labels);
     plot->xAxis->setTicker(textTicker);
-    plot->xAxis->setTickLabelRotation(30);
-    plot->xAxis->setSubTicks(false);
     plot->xAxis->setTickLength(0, 4);
-    plot->xAxis->setRange(0, 8);
-    plot->xAxis->setBasePen(QPen(Qt::white));
-    plot->xAxis->setTickPen(QPen(Qt::white));
-    plot->xAxis->grid()->setVisible(true);
-    plot->xAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::DotLine));
-    plot->xAxis->setTickLabelColor(Qt::white);
-    plot->xAxis->setLabelColor(Qt::white);
+    plot->xAxis->setRange(0, data.size() + 1);
 
-    // prepare y axis:
-    plot->yAxis->setRange(0, 12.1);
-    plot->yAxis->setPadding(5); // a bit more space to the left border
-    plot->yAxis->setLabel("Expense per category\nin " + backend.currencies().def());
-    plot->yAxis->setBasePen(QPen(Qt::white));
-    plot->yAxis->setTickPen(QPen(Qt::white));
-    plot->yAxis->setSubTickPen(QPen(Qt::white));
-    plot->yAxis->grid()->setSubGridVisible(true);
-    plot->yAxis->setTickLabelColor(Qt::white);
-    plot->yAxis->setLabelColor(Qt::white);
-    plot->yAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
-    plot->yAxis->grid()->setSubGridPen(QPen(QColor(130, 130, 130), 0, Qt::DotLine));
-
-    // Add data:
-    QVector<double> expenseData;
-    expenseData  << 0.86*10.5 << 0.83*5.5 << 0.84*5.5 << 0.52*5.8 << 0.89*5.2;
-    expenseBar->setData(ticks, expenseData);
+    plot->yAxis->setRange(values[0] * -0.05f, values[0] * 1.05f);
+    plot->yAxis->setLabel("Expense per category\nin " + backend->currencies()->def());
 
     plot->replot();
 }
@@ -163,8 +225,8 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
 void MainWindow::onMonthButton(bool next)
 {
     int v = next ? 1 : -1;
-    start = start.addMonths(v);
-    finish = finish.addMonths(v);
+    from = from.addMonths(v);
+    to = to.addMonths(v);
     updateTransactions();
 }
 
@@ -180,8 +242,8 @@ void MainWindow::onApplyCustomFilters()
 
 void MainWindow::updateTransactions()
 {
-    ui->monthButton->setText(start.toString("MMMM yyyy"));
-    model->setTransactions(backend.transactions().get(start, finish));
+    ui->dateButton->setText(from.toString("MMMM yyyy"));
+    model->setTransactions(backend->transactions()->get(from, to));
 }
 
 void MainWindow::onCategoryFilterButton()
@@ -189,7 +251,7 @@ void MainWindow::onCategoryFilterButton()
     QDialog* dialog = new QDialog(this);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
 
-    for (const auto& item : backend.categories().names()) {
+    for (const auto& item : backend->categories()->names()) {
         QCheckBox* box = new QCheckBox(item, dialog);
         box->setChecked(pickedCategories.contains(item));
         layout->addWidget(box);
@@ -209,19 +271,19 @@ void MainWindow::onCategoryFilterButton()
         proxy->useFilters({.categories = pickedCategories});
     };
 
-    for (auto* box : dialog->findChildren<QCheckBox*>()) {
+    for (auto* box : dialog->findChildren<QCheckBox*>())
         connect(box, &QCheckBox::clicked, dialog, updateCategoriesFilter);
-    }
 
     connect(button, &QPushButton::clicked, dialog, [dialog]{ dialog->accept(); });
 
-    connect(dialog, &QDialog::finished, this, [=](int result){
+    connect(dialog, &QDialog::finished, this, [=](int result) {
         if ((result == QDialog::Accepted && pickedCategories.empty()) || result == QDialog::Rejected)
             ui->noFilterButton->click();
     });
 
     updateCategoriesFilter();
     dialog->setWindowModality(Qt::WindowModal);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
 
@@ -231,9 +293,9 @@ void MainWindow::updateData()
         box->clear();
         for (const auto& x : list) box->addItem(x);
     };
-    updateCombo(ui->tCurrency, backend.currencies().codes());
-    updateCombo(ui->tAccount, backend.accounts().names());
-    updateCombo(ui->tCategory, backend.categories().names());
+    updateCombo(ui->tCurrency, backend->currencies()->codes());
+    updateCombo(ui->tAccount, backend->accounts()->names());
+    updateCombo(ui->tCategory, backend->categories()->names());
 }
 
 void MainWindow::onAddTransaction()
@@ -241,7 +303,7 @@ void MainWindow::onAddTransaction()
     Transaction t;
     t.amount = ui->tAmount->value();
     t.currency = ui->tCurrency->currentText();
-    t.dateTime = QDateTime(ui->tDate->date(), ui->tTime->time());
+    t.dateTime = QDateTime(ui->tDate->date(), ui->tTime->time()).toString(Qt::ISODate);
     t.category = ui->tCategory->currentText();
     t.account = ui->tAccount->currentText();
     t.note = ui->tNote->text();
@@ -251,7 +313,7 @@ void MainWindow::onAddTransaction()
         return;
     }
 
-    backend.transactions().add(std::move(t));
+    backend->transactions()->add(std::move(t));
 
     updateTransactions();
     changePage(Page::transactions);

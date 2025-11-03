@@ -1,13 +1,7 @@
 #pragma once
 
-#include "../Backend/backend.h"
-#include "../Backend/model.h"
-#include "qcustomplot.h"
 #include <QMainWindow>
-#include <QTimer>
-#include <QButtonGroup>
-#include <QStyledItemDelegate>
-#include <QDialog>
+#include <QDate>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -15,19 +9,10 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
-class TransactionDelegate : public QStyledItemDelegate
-{
-public:
-    explicit TransactionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
-
-    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override
-    {
-        QStyleOptionViewItem opt(option);
-        opt.state &= ~QStyle::State_MouseOver;
-        QStyledItemDelegate::paint(painter, opt, index);
-    }
-};
-
+class TransactionProxy;
+class TransactionModel;
+class QCustomPlot;
+class Backend;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -39,11 +24,11 @@ private:
     enum Page { home, transactions, settings, newTransaction, customFilters };
 
     Ui::MainWindow *ui;
-    Backend backend;
+    Backend* backend;
     TransactionModel* model;
     TransactionProxy* proxy;
     QStringList pickedCategories;
-    QDate start, finish;
+    QDate from, to;
 
     void setupUI();
 
@@ -53,8 +38,10 @@ private:
     void onApplyCustomFilters();
     void onCategoryFilterButton();
     void onAddCategory();
+    void onFirstLaunch();
 
     // helpers
+    QVector<double> smoothGraph(const QVector<double>& x, const QVector<double>& data);
     void updateTransactions();
     void updateData();
     void setupFinancesPlot(QCustomPlot *customPlot);

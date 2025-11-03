@@ -1,23 +1,21 @@
 #pragma once
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QStringList>
-#include <QDateTime>
-
+class QSqlDatabase;
+class Transaction;
 
 const QString transactionsTable =
-    "CREATE TABLE IF NOT EXISTS transactions ("
+    "CREATE TABLE transactions ("
     "id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "amount REAL, "
     "currency TEXT, "
     "dateTime TEXT, "
     "category TEXT, "
     "account TEXT, "
-    "note TEXT)";
+    "note TEXT, "
+    "FOREIGN KEY(amount) REFERENCES currencies(code), "
+    "FOREIGN KEY(category) REFERENCES categories(name), "
+    "FOREIGN KEY(account) REFERENCES accounts(name))";
 
-
-class Transaction;
 class TransactionsManager
 {
     QSqlDatabase& db;
@@ -25,23 +23,7 @@ class TransactionsManager
 public:
     TransactionsManager(QSqlDatabase& db) : db(db) {}
 
-    void add(Transaction t);
-    QVector<Transaction> get(const QDate& from, const QDate& to);
-};
-
-class Transaction
-{
-public:
-    // recurrence
-    float amount;
-    QString currency;
-    QDateTime dateTime;
-    QString category;
-    QString account;
-    QString note;
-    int id;
-
-    explicit operator bool() const {
-        return !(amount == 0.f || currency.isEmpty() || dateTime.isNull() || category.isEmpty() || account.isEmpty());
-    }
+    void add(const Transaction& t);
+    QVector<Transaction> get(const QDate& from, const QDate& to) const;
+    QVector<QPair<QString, double>> expensePerCategory(const QDate& from, const QDate& to) const;
 };

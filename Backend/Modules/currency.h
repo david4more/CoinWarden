@@ -1,28 +1,12 @@
 #pragma once
 
-#include <QStringList>
-#include <QMap>
-
+class QSqlDatabase;
 
 const QString currenciesTable =
-    "CREATE TABLE IF NOT EXISTS currencies ("
-    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-    "name TEXT UNIQUE NOT NULL,"
+    "CREATE TABLE currencies ("
+    "code TEXT PRIMARY KEY, "
     "symbol TEXT UNIUE NOT NULL)";
 
-
-class Currency;
-class CurrenciesManager
-{
-    QStringList _currencies;
-    QString _defaultCurrency;
-
-public:
-    CurrenciesManager(QString defC, QStringList curs) : _currencies(curs), _defaultCurrency(defC) {};
-
-    QStringList codes() const { return _currencies; };
-    QString def() const { return _defaultCurrency; }
-};
 
 class Currency
 {
@@ -33,5 +17,18 @@ public:
     Currency(QString n, QString c, QString s, double r) : name(n), code(c), symbol(s), rate(r) {}
 
     double convertToDefault(double amount) { return amount * rate; };
+};
+
+class CurrenciesManager
+{
+    QSqlDatabase& db;
+    QStringList _currencies;
+    QString _defaultCurrency;
+
+public:
+    CurrenciesManager(QSqlDatabase& db);
+
+    QStringList codes() const { return _currencies; };
+    QString def() const { return _defaultCurrency; }
 };
 

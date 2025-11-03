@@ -2,8 +2,9 @@
 
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
-#include "Modules/transaction.h"
+#include "Modules/t.h"
 
+class Transaction;
 class TransactionModel : public QAbstractTableModel
 {
     Q_OBJECT

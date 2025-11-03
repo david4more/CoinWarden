@@ -1,19 +1,21 @@
 #pragma once
 
-#include <QStringList>
-
+class QSqlDatabase;
 
 const QString categoriesTable =
-    "CREATE TABLE IF NOT EXISTS categories ("
-    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-    "name TEXT UNIQUE NOT NULL)";
-
+    "CREATE TABLE categories ("
+    "name TEXT PRIMARY KEY, "
+    "color TEXT)";
 
 class CategoriesManager
 {
-    QStringList _names;
+    QSqlDatabase& db;
+    static const QString defaultColor;
 
 public:
-    CategoriesManager(QStringList ns) : _names(std::move(ns)) {}
-    QStringList names() const  {return _names; }
+    explicit CategoriesManager(QSqlDatabase& db) : db(db) {}
+    QStringList names() const;
+    bool add(QStringList names, QString color = defaultColor);
+    bool add(QString name, QString color = defaultColor);
+    bool setupDefault();
 };
