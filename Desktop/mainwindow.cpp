@@ -213,13 +213,8 @@ void MainWindow::updateData()
     updateCombo(ui->tCurrency, backend->currencies()->codes());
     updateCombo(ui->tAccount, backend->accounts()->names());
 
-    auto x = backend->categories()->get();
-    QStringList expenseCats, incomeCats;
-    for (auto a : x)
-        a.isExpense ? expenseCats.push_back(a.name) : incomeCats.push_back(a.name);
-
-    updateCombo(ui->tCategory, expenseCats);
-    updateCombo(ui->tCategory, incomeCats);
+    updateCombo(ui->fExpenseCategories, backend->categories()->getExpenseNames());
+    updateCombo(ui->fIncomeCategories, backend->categories()->getIncomeNames());
 }
 
 void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
@@ -241,19 +236,18 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     plot->yAxis->setLabelColor(Qt::white);
     plot->yAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
 
-    QVector<double> ticks{};
-    QVector<double> values{};
-    QVector<QString> labels{};
+    QVector<double> ticks;
+    QVector<double> values;
+    QVector<QString> labels;
     auto data = backend->transactions()->expensePerCategory(from, to);
 
-    if (data.size() == 0) QMessageBox::critical(this, "Error", "Empty categories container");
-
-    for (int i = 0; i < data.size(); ++i){
-        qDebug() << i;
-        ticks << i + 1;
-        labels << data[i].first;
-        values << data[i].second;
-    }
+    if (data.size() == 0) {}
+    else
+        for (int i = 0; i < data.size(); ++i) {
+            ticks << i + 1;
+            labels << data[i].first;
+            values << data[i].second;
+        }
 
     expenseBar->setData(ticks, values);
 
@@ -297,10 +291,7 @@ void MainWindow::onFirstLaunch()
             return;
         }
 
-        for (auto c : cats){
-            qDebug() << c;
-            backend->categories()->add(c, true);
-        }
+        for (auto c : cats) backend->categories()->add(c, true);
 
         dialog->accept();
     });
@@ -308,6 +299,7 @@ void MainWindow::onFirstLaunch()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
+
     backend->categories()->setupDefault(); // dialog->exec();
 }
 
@@ -316,7 +308,7 @@ void MainWindow::onCategoryFilterButton()
     QDialog* dialog = new QDialog(this);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
 
-    for (const auto& item : backend->categories()->getNames()) {
+    for (const auto& item : backend->categories()->getExpenseNames()) {
         QCheckBox* box = new QCheckBox(item, dialog);
         box->setChecked(pickedCategories.contains(item));
         layout->addWidget(box);

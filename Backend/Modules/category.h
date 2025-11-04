@@ -4,9 +4,10 @@ class QSqlDatabase;
 class Category;
 const QString categoriesTable =
     "CREATE TABLE categories ("
-    "name TEXT PRIMARY KEY, "
+    "name TEXT NOT NULL, "
     "isExpense BOOLEAN NOT NULL, "
-    "color TEXT)";
+    "color TEXT, "
+    "PRIMARY KEY (name, isExpense))";
 
 class CategoriesManager
 {
@@ -16,6 +17,8 @@ class CategoriesManager
 public:
     explicit CategoriesManager(QSqlDatabase& db) : db(db) {}
     QVector<Category> get() const;
+    QStringList getExpenseNames() const;
+    QStringList getIncomeNames() const;
     QStringList getNames() const;
     bool add(QString name, bool isExpense, QString color = defaultColor);
     bool setupDefault();
