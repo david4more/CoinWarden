@@ -1,20 +1,22 @@
 #pragma once
 
+#include "utils.h"
 class QSqlDatabase;
 class Transaction;
 
-const QString transactionsTable =
-    "CREATE TABLE transactions ("
-    "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-    "amount REAL, "
-    "currency TEXT, "
-    "dateTime TEXT, "
-    "category TEXT, "
-    "account TEXT, "
-    "note TEXT, "
-    "FOREIGN KEY(amount) REFERENCES currencies(code), "
-    "FOREIGN KEY(category) REFERENCES categories(name), "
-    "FOREIGN KEY(account) REFERENCES accounts(name))";
+const QString transactionsTable = R"(
+    CREATE TABLE transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    amount REAL,
+    currency TEXT,
+    dateTime TEXT,
+    category TEXT,
+    account TEXT,
+    note TEXT,
+    FOREIGN KEY(amount) REFERENCES currencies(code),
+    FOREIGN KEY(category) REFERENCES categories(name),
+    FOREIGN KEY(account) REFERENCES accounts(name))
+)";
 
 class TransactionsManager
 {
@@ -24,8 +26,9 @@ class TransactionsManager
 public:
     TransactionsManager(QSqlDatabase& db) : db(db) {}
 
-    void add(const Transaction& t);
     QVector<Transaction> get(const QDate& from, const QDate& to) const;
-    QVector<QPair<QString, double>> expensePerCategory(const QDate& from, const QDate& to) const;
-    QVector<QPair<QDate, double>> expensePerDay(const QDate& from, const QDate& to) const;
+    QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type = CategoryType::All) const;
+    QVector<QPair<QDate, double>> transactionsPerDay(const QDate& from, const QDate& to) const;
+    bool add(const Transaction& t);
+    bool setupDefault();
 };

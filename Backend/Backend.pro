@@ -16,6 +16,7 @@ HEADERS += backend.h \
     Modules/currency.h \
     Modules/t.h \
     Modules/transaction.h \
+    Modules/utils.h \
     model.h
 
 PRECOMPILED_HEADER = Modules/pch.h

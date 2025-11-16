@@ -10,7 +10,7 @@ QVector<Category> CategoriesManager::get() const
 
     query.prepare("SELECT name, color, isExpense FROM categories");
 
-    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::get query"; return {}; }
 
     QVector<Category> ret;
 
@@ -20,45 +20,21 @@ QVector<Category> CategoriesManager::get() const
     return ret;
 }
 
-QStringList CategoriesManager::getExpenseNames() const
+QStringList CategoriesManager::getNames(CategoryType type) const
 {
     QSqlQuery query(db);
 
-    query.prepare("SELECT name FROM categories "
-                  "WHERE isExpense = 1");
+    QString q = "SELECT name FROM categories ";
+    switch (type) {
+    case CategoryType::Expense:
+        q += "WHERE isExpense = 1"; break;
+    case CategoryType::Income:
+        q += "WHERE isExpense = 0"; break;
+    }
 
-    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
+    query.prepare(q);
 
-    QStringList ret;
-    while (query.next())
-        ret << query.value(0).toString();
-
-    return ret;
-}
-
-QStringList CategoriesManager::getIncomeNames() const
-{
-    QSqlQuery query(db);
-
-    query.prepare("SELECT name FROM categories "
-                  "WHERE isExpense = 0");
-
-    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
-
-    QStringList ret;
-    while (query.next())
-        ret << query.value(0).toString();
-
-    return ret;
-}
-
-QStringList CategoriesManager::getNames() const
-{
-    QSqlQuery query(db);
-
-    query.prepare("SELECT name FROM categories");
-
-    if (!query.exec()) { qDebug() << "Failed to execute query"; return {}; }
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::getNames query"; return {}; }
 
     QStringList ret;
     while (query.next())
@@ -97,7 +73,7 @@ bool CategoriesManager::add(QString name, bool isExpense, QString color)
     query.bindValue(":color", color);
     query.bindValue(":isExpense", isExpense? 1 : 0);
 
-    if (!query.exec()) { qDebug() << "Failed to execute query"; return false; }
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::add query"; return false; }
 
     return true;
 }

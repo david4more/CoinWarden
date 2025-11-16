@@ -2,10 +2,11 @@
 
 class QSqlDatabase;
 
-const QString accountsTable =
-    "CREATE TABLE accounts ("
-    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-    "name TEXT UNIQUE NOT NULL)";
+const QString accountsTable = R"(
+    CREATE TABLE accounts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL)
+)";
 
 class AccountsManager
 {

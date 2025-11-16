@@ -2,10 +2,11 @@
 
 class QSqlDatabase;
 
-const QString currenciesTable =
-    "CREATE TABLE currencies ("
-    "code TEXT PRIMARY KEY, "
-    "symbol TEXT UNIUE NOT NULL)";
+const QString currenciesTable = R"(
+    CREATE TABLE currencies (
+    code TEXT PRIMARY KEY,
+    symbol TEXT UNIUE NOT NULL)
+)";
 
 
 class Currency

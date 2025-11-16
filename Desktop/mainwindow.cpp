@@ -213,8 +213,8 @@ void MainWindow::updateData()
     updateCombo(ui->tCurrency, backend->currencies()->codes());
     updateCombo(ui->tAccount, backend->accounts()->names());
 
-    updateCombo(ui->fExpenseCategories, backend->categories()->getExpenseNames());
-    updateCombo(ui->fIncomeCategories, backend->categories()->getIncomeNames());
+    updateCombo(ui->fExpenseCategories, backend->categories()->getNames(CategoryType::Expense));
+    updateCombo(ui->fIncomeCategories, backend->categories()->getNames(CategoryType::Income));
 }
 
 void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
@@ -239,14 +239,14 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     QVector<double> ticks;
     QVector<double> values;
     QVector<QString> labels;
-    auto data = backend->transactions()->expensePerCategory(from, to);
+    auto data = backend->transactions()->transactionsPerCategory(from, to, CategoryType::Expense);
 
     if (data.size() == 0) {}
     else
         for (int i = 0; i < data.size(); ++i) {
             ticks << i + 1;
             labels << data[i].first;
-            values << data[i].second;
+            values << -data[i].second;
         }
 
     expenseBar->setData(ticks, values);
@@ -300,6 +300,7 @@ void MainWindow::onFirstLaunch()
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
 
+    backend->transactions()->setupDefault();
     backend->categories()->setupDefault(); // dialog->exec();
 }
 
@@ -308,7 +309,7 @@ void MainWindow::onCategoryFilterButton()
     QDialog* dialog = new QDialog(this);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
 
-    for (const auto& item : backend->categories()->getExpenseNames()) {
+    for (const auto& item : backend->categories()->getNames()) {
         QCheckBox* box = new QCheckBox(item, dialog);
         box->setChecked(pickedCategories.contains(item));
         layout->addWidget(box);

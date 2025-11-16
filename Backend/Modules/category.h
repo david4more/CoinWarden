@@ -1,13 +1,15 @@
 #pragma once
 
+#include "utils.h"
 class QSqlDatabase;
 class Category;
-const QString categoriesTable =
-    "CREATE TABLE categories ("
-    "name TEXT NOT NULL, "
-    "isExpense BOOLEAN NOT NULL, "
-    "color TEXT, "
-    "PRIMARY KEY (name, isExpense))";
+const QString categoriesTable = R"(
+    CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    isExpense BOOLEAN NOT NULL,
+    color TEXT)
+)";
 
 class CategoriesManager
 {
@@ -17,9 +19,7 @@ class CategoriesManager
 public:
     explicit CategoriesManager(QSqlDatabase& db) : db(db) {}
     QVector<Category> get() const;
-    QStringList getExpenseNames() const;
-    QStringList getIncomeNames() const;
-    QStringList getNames() const;
+    QStringList getNames(CategoryType type = CategoryType::All) const;
     bool add(QString name, bool isExpense, QString color = defaultColor);
     bool setupDefault();
 };
