@@ -24,12 +24,12 @@ QStringList CategoriesManager::getNames(CategoryType type) const
 {
     QSqlQuery query(db);
 
-    QString q = "SELECT name FROM categories ";
+    QString q = "SELECT name FROM categories";
     switch (type) {
     case CategoryType::Expense:
-        q += "WHERE isExpense = 1"; break;
+        q += " WHERE isExpense = 1"; break;
     case CategoryType::Income:
-        q += "WHERE isExpense = 0"; break;
+        q += " WHERE isExpense = 0"; break;
     }
 
     query.prepare(q);

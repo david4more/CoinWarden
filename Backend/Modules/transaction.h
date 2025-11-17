@@ -28,7 +28,7 @@ public:
 
     QVector<Transaction> get(const QDate& from, const QDate& to) const;
     QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type = CategoryType::All) const;
-    QVector<QPair<QDate, double>> transactionsPerDay(const QDate& from, const QDate& to) const;
+    QVector<DailyTransactions> transactionsPerDay(const QDate& from, const QDate& to) const;
     bool add(const Transaction& t);
     bool setupDefault();
 };

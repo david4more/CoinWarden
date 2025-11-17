@@ -115,39 +115,32 @@ void MainWindow::setupUI()
 
 void MainWindow::setupFinancesPlot(QCustomPlot *plot)
 {
-    // auto data = backend->transactions()->expensePerDay(from.addMonths(-12), to);
-    // add two new graphs and set their look:
     plot->addGraph();
-    plot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
-    plot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20))); // first graph will be filled with translucent blue
+    plot->graph(0)->setPen(QPen(Qt::blue));
+    plot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20)));
     plot->addGraph();
-    plot->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
-    // generate some points of data (y0 for first, y1 for second graph):
-    QVector<double> x(251), y0(251), y1(251);
-    for (int i=0; i<251; ++i)
+    plot->graph(1)->setPen(QPen(Qt::red));
+    plot->graph(1)->setBrush(QBrush(QColor(255, 0, 0, 20)));
+
+    auto data = backend->transactions()->transactionsPerDay(QDate::currentDate().addMonths(-1), QDate::currentDate());
+    QVector<double> x(data.size()), y0(data.size()), y1(data.size());
+    for (int i= 0; i < data.size(); ++i)
     {
         x[i] = i;
-        y0[i] = qExp(-i/150.0)*qCos(i/10.0); // exponentially decaying cosine
-        y1[i] = qExp(-i/150.0);              // exponential envelope
+        y0[i] = data[i].income;
+        y1[i] = data[i].expense;
     }
+
     // configure right and top axis to show ticks but no labels:
     // (see QCPAxisRect::setupFullAxesBox for a quicker method to do this)
     plot->xAxis2->setVisible(true);
     plot->xAxis2->setTickLabels(false);
     plot->yAxis2->setVisible(true);
     plot->yAxis2->setTickLabels(false);
-    // make left and bottom axes always transfer their ranges to right and top axes:
-    connect(plot->xAxis, SIGNAL(rangeChanged(QCPRange)), plot->xAxis2, SLOT(setRange(QCPRange)));
-    connect(plot->yAxis, SIGNAL(rangeChanged(QCPRange)), plot->yAxis2, SLOT(setRange(QCPRange)));
-    // pass data points to graphs:
-
     plot->graph(0)->setData(x, y0);
     plot->graph(1)->setData(x, y1);
-    // let the ranges scale themselves so graph 0 fits perfectly in the visible area:
-    plot->graph(0)->rescaleAxes();
-    // same thing for graph 1, but only enlarge ranges (in case graph 1 is smaller than graph 0):
-    plot->graph(1)->rescaleAxes(true);
-    // Note: we could have also just called customPlot->rescaleAxes(); instead
+
+    plot->rescaleAxes();
     // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 }
@@ -212,6 +205,7 @@ void MainWindow::updateData()
     };
     updateCombo(ui->tCurrency, backend->currencies()->codes());
     updateCombo(ui->tAccount, backend->accounts()->names());
+    updateCombo(ui->tCategory, backend->categories()->getNames(CategoryType::Expense));
 
     updateCombo(ui->fExpenseCategories, backend->categories()->getNames(CategoryType::Expense));
     updateCombo(ui->fIncomeCategories, backend->categories()->getNames(CategoryType::Income));
