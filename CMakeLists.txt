@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(Finance LANGUAGES CXX)
 
-# Require C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Add subdirectories
 add_subdirectory(Backend)
 add_subdirectory(Desktop)
