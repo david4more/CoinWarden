@@ -3,3 +3,5 @@
 *.pro.user
 *.autosave
 *qrc~
+*.idea
+*.qtcreator
