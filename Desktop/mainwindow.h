@@ -41,18 +41,18 @@ private:
     void onFirstLaunch();
 
     // helpers
-    QVector<double> smoothGraph(const QVector<double>& data, const QVector<double>& x);
-    void updateTransactions();
-    void updateData();
-    void setupFinancesPlot(QCustomPlot *customPlot);
-    void setupCategoriesPlot(QCustomPlot *customPlot);
+    static QVector<double> smoothGraph(const QVector<double>& data, const QVector<double>& x);
+    void updateTransactions() const;
+    void updateData() const;
+    void setupFinancesPlot(QCustomPlot *customPlot) const;
+    void setupCategoriesPlot(QCustomPlot *customPlot) const;
 
     void changePage(Page p);
-    void highlightField(QWidget* widget, bool condition);
+    static void highlightField(QWidget* widget, bool condition);
     void clearTransactionForm();
 
     void connectSlots();
-    void setupTransactionsTable();
+    void setupTransactionsTable() const;
     void setupButtonGroups();
 };
 

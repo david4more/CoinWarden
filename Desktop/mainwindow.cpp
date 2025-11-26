@@ -61,7 +61,7 @@ void MainWindow::connectSlots()
     connect(ui->tExpense, &QToolButton::clicked, this, [this]{  });
 }
 
-void MainWindow::setupTransactionsTable()
+void MainWindow::setupTransactionsTable() const
 {
     ui->transactionsTable->resizeColumnsToContents();
     ui->transactionsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -113,7 +113,7 @@ void MainWindow::setupUI()
     setupCategoriesPlot(ui->categoriesPlot);
 }
 
-void MainWindow::setupFinancesPlot(QCustomPlot *plot)
+void MainWindow::setupFinancesPlot(QCustomPlot *plot) const
 {
     plot->addGraph();
     plot->graph(0)->setPen(QPen(Qt::blue));
@@ -142,7 +142,7 @@ void MainWindow::setupFinancesPlot(QCustomPlot *plot)
     plot->graph(1)->setData(x, y1);
 
     plot->rescaleAxes();
-    // Allow user to drag axis ranges with mouse, zoom with mouse wheel and select graphs by clicking:
+    // Allow the user to drag axis ranges with the mouse, zoom with the mouse wheel and select graphs by clicking:
     plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 }
 
@@ -159,7 +159,7 @@ QVector<double> MainWindow::smoothGraph(const QVector<double>& data, const QVect
         double sum = 0.0;
         int count = 0;
 
-        // accumulate values in window
+        // accumulate values in a window
         for (int j = -half; j <= half; ++j) {
             int idx = i + j;
             if (idx >= 0 && idx < data.size()) {
@@ -192,13 +192,13 @@ void MainWindow::onApplyCustomFilters()
     ;
 }
 
-void MainWindow::updateTransactions()
+void MainWindow::updateTransactions() const
 {
     ui->dateButton->setText(from.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(from, to));
 }
 
-void MainWindow::updateData()
+void MainWindow::updateData() const
 {
     auto updateCombo = [&](QComboBox* box, QStringList list) {
         box->clear();
@@ -212,7 +212,7 @@ void MainWindow::updateData()
     updateCombo(ui->fIncomeCategories, backend->categories()->getNames(CategoryType::Income));
 }
 
-void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
+void MainWindow::setupCategoriesPlot(QCustomPlot *plot) const
 {
     plot->setBackground(QBrush(QColor(30, 30, 30)));
 

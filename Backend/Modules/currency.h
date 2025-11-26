@@ -23,7 +23,7 @@ class BACKEND_EXPORT Currency
 public:
     Currency(QString n, QString c, QString s, double r) : name(n), code(c), symbol(s), rate(r) {}
 
-    double convertToDefault(double amount) { return amount * rate; };
+    double convertToDefault(double amount) const { return amount * rate; };
 };
 
 class CurrenciesManager

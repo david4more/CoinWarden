@@ -27,10 +27,10 @@ public:
     ~Backend();
     void init();
 
-    TransactionsManager* transactions() { return _transactions; }
-    CurrenciesManager* currencies() { return _currencies; }
-    AccountsManager* accounts() { return _accounts; }
-    CategoriesManager* categories() { return _categories; }
+    TransactionsManager* transactions() const { return _transactions; }
+    CurrenciesManager* currencies() const { return _currencies; }
+    AccountsManager* accounts() const { return _accounts; }
+    CategoriesManager* categories() const { return _categories; }
 
 private:
     QSqlDatabase db;
