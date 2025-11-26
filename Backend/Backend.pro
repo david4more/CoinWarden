@@ -1,6 +1,8 @@
 TEMPLATE = lib
-CONFIG += staticlib c++17
+CONFIG += dll c++20
 TARGET = Backend
+DEFINES += BACKEND_LIB
+DESTDIR = debug
 
 QT += core sql
 

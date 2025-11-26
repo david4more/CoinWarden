@@ -1,11 +1,18 @@
 #pragma once
 
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
+
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
 #include "Modules/t.h"
 
 class Transaction;
-class TransactionModel : public QAbstractTableModel
+class BACKEND_EXPORT TransactionModel : public QAbstractTableModel
 {
     Q_OBJECT
     QVector<Transaction> transactions;
@@ -19,7 +26,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 };
 
-class TransactionProxy : public QSortFilterProxyModel {
+class BACKEND_EXPORT TransactionProxy : public QSortFilterProxyModel {
     QStringList categories = {};
     float minAmount = 0.f, maxAmount = 0.f;
     bool useCategoryFilter = false, useMinFilter = false, useMaxFilter = false;

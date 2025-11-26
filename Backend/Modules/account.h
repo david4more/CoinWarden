@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
 class QSqlDatabase;
 
 const QString accountsTable = R"(
@@ -8,7 +14,7 @@ const QString accountsTable = R"(
     name TEXT UNIQUE NOT NULL)
 )";
 
-class AccountsManager
+class BACKEND_EXPORT AccountsManager
 {
     QSqlDatabase& db;
     QStringList _names;

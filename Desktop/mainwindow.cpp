@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete backend;
     delete model;
     delete proxy;
+    delete backend;
 }
 
 void MainWindow::connectSlots()
@@ -90,8 +90,8 @@ void MainWindow::setupButtonGroups()
 
 void MainWindow::setupUI()
 {
-    backend = new Backend(this);
-    connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
+    backend = new Backend();
+    // connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->init();
 
     model = new TransactionModel(ui->centralwidget);
@@ -124,6 +124,7 @@ void MainWindow::setupFinancesPlot(QCustomPlot *plot)
 
     auto data = backend->transactions()->transactionsPerDay(QDate::currentDate().addMonths(-1), QDate::currentDate());
     QVector<double> x(data.size()), y0(data.size()), y1(data.size());
+    if (data.size() == 0) return;
     for (int i= 0; i < data.size(); ++i)
     {
         x[i] = i;
@@ -235,7 +236,7 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     QVector<QString> labels;
     auto data = backend->transactions()->transactionsPerCategory(from, to, CategoryType::Expense);
 
-    if (data.size() == 0) {}
+    if (data.size() == 0) return;
     else
         for (int i = 0; i < data.size(); ++i) {
             ticks << i + 1;
@@ -255,47 +256,6 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot)
     plot->yAxis->setLabel("Expense per category\nin " + backend->currencies()->def());
 
     plot->replot();
-}
-
-void MainWindow::onFirstLaunch()
-{
-    QDialog* dialog = new QDialog(this);
-    QVBoxLayout* layout = new QVBoxLayout(dialog);
-    QLabel* label = new QLabel("Welcome! Add a few categories to begin:", dialog);
-    QVector<QLineEdit*> lines;
-    lines.push_back(new QLineEdit(dialog));
-    QPushButton* add = new QPushButton("Add", dialog);
-    QPushButton* def = new QPushButton("Use default", dialog);
-    QPushButton* done = new QPushButton("Done", dialog);
-    layout->addWidget(label);
-    layout->addWidget(lines.back());
-    layout->addWidget(add);
-    layout->addWidget(def);
-    layout->addWidget(done);
-
-    connect(add, &QPushButton::clicked, dialog, [&]{ lines.push_back(new QLineEdit(dialog)); layout->insertWidget(lines.size() - 1, lines.back()); });
-    connect(done, &QPushButton::clicked, dialog, [&]{
-        QStringList cats;
-        for (auto l : lines)
-            if (!l->text().isEmpty())
-                cats << l->text();
-
-        if (cats.isEmpty()) {
-            label->setText("Unable to proceed without categories");
-            return;
-        }
-
-        for (auto c : cats) backend->categories()->add(c, true);
-
-        dialog->accept();
-    });
-    connect(def, &QPushButton::clicked, dialog, [&]{ backend->categories()->setupDefault(); dialog->accept(); });
-
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
-
-    backend->transactions()->setupDefault();
-    backend->categories()->setupDefault(); // dialog->exec();
 }
 
 void MainWindow::onCategoryFilterButton()
@@ -397,6 +357,46 @@ void MainWindow::changePage(Page p)
     if (p == Page::newTransaction) clearTransactionForm();
 }
 
+void MainWindow::onFirstLaunch()
+{
+    QDialog* dialog = new QDialog(this);
+    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    QLabel* label = new QLabel("Welcome! Add a few categories to begin:", dialog);
+    QVector<QLineEdit*> lines;
+    lines.push_back(new QLineEdit(dialog));
+    QPushButton* add = new QPushButton("Add", dialog);
+    QPushButton* def = new QPushButton("Use default", dialog);
+    QPushButton* done = new QPushButton("Done", dialog);
+    layout->addWidget(label);
+    layout->addWidget(lines.back());
+    layout->addWidget(add);
+    layout->addWidget(def);
+    layout->addWidget(done);
+
+    connect(add, &QPushButton::clicked, dialog, [&]{ lines.push_back(new QLineEdit(dialog)); layout->insertWidget(lines.size() - 1, lines.back()); });
+    connect(done, &QPushButton::clicked, dialog, [&]{
+        QStringList cats;
+        for (auto l : lines)
+            if (!l->text().isEmpty())
+                cats << l->text();
+
+        if (cats.isEmpty()) {
+            label->setText("Unable to proceed without categories");
+            return;
+        }
+
+        for (auto c : cats) backend->categories()->add(c, true);
+
+        dialog->accept();
+    });
+    connect(def, &QPushButton::clicked, dialog, [&]{ backend->categories()->setupDefault(); dialog->accept(); });
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
+
+    backend->transactions()->setupDefault();
+    backend->categories()->setupDefault(); // dialog->exec();
+}
 
 
 

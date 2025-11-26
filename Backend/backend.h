@@ -1,21 +1,29 @@
 #pragma once
 
-#include <QObject>
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
+// #include <QObject>
 #include <QSqlDatabase>
 class TransactionsManager;
 class CurrenciesManager;
 class CategoriesManager;
 class AccountsManager;
-class QSqlDatabase;
 
-class Backend : public QObject {
-    Q_OBJECT
+class BACKEND_EXPORT Backend {
+/*
+        Q_OBJECT
 
 signals:
     void firstLaunch();
+*/
 
 public:
-    Backend(QObject* parent) : QObject(parent) {}   // init() call after connecting signals required
+    // Backend(QObject* parent) : QObject(parent) {}   // init() call after connecting signals required
+    Backend();
     ~Backend();
     void init();
 

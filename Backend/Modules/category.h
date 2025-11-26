@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
+
 #include "utils.h"
 class QSqlDatabase;
 class Category;
@@ -11,7 +18,7 @@ const QString categoriesTable = R"(
     color TEXT)
 )";
 
-class CategoriesManager
+class BACKEND_EXPORT CategoriesManager
 {
     QSqlDatabase& db;
     static const QString defaultColor;

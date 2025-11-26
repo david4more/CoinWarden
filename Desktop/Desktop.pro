@@ -1,5 +1,5 @@
 QT       += core gui sql widgets network
-CONFIG += c++17
+CONFIG += c++20
 
 SOURCES += main.cpp mainwindow.cpp
 HEADERS += mainwindow.h
@@ -7,11 +7,11 @@ FORMS += mainwindow.ui
 
 # Backend setup
 INCLUDEPATH += $$PWD/../Backend
-LIBS += -L$$OUT_PWD/../Backend/debug -lBackend
+LIBS += $$OUT_PWD/../Backend/debug/Backend.lib
 
 # QCustomPlot setup
 INCLUDEPATH += $$PWD/QCustomPlot
-LIBS += -L$$PWD/../Desktop/QCustomPlot -lqcustomplotd2
+LIBS += $$PWD/../Desktop/QCustomPlot/qcustomplotd2.lib
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

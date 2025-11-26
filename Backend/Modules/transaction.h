@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
+
 #include "utils.h"
 class QSqlDatabase;
 class Transaction;
@@ -14,11 +21,11 @@ const QString transactionsTable = R"(
     account TEXT,
     note TEXT,
     FOREIGN KEY(amount) REFERENCES currencies(code),
-    FOREIGN KEY(category) REFERENCES categories(name),
-    FOREIGN KEY(account) REFERENCES accounts(name))
+    FOREIGN KEY(category) REFERENCES categories(id),
+    FOREIGN KEY(account) REFERENCES accounts(id))
 )";
 
-class TransactionsManager
+class BACKEND_EXPORT TransactionsManager
 {
     QSqlDatabase& db;
     void normalizeMonthRange(QDate& from, QDate& to) const;

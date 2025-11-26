@@ -33,8 +33,15 @@ void Backend::init()
         for (const auto& q : { categoriesTable, currenciesTable, accountsTable, transactionsTable })
             if (!query.exec(q)) qDebug() << "Failed to create table";
 
-        emit firstLaunch();
+        // emit firstLaunch();
+        categories()->setupDefault();
+        transactions()->setupDefault();
     }
+}
+
+Backend::Backend()
+{
+    ;
 }
 
 Backend::~Backend()

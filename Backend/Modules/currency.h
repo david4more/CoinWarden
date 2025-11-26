@@ -1,5 +1,11 @@
 #pragma once
 
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
 class QSqlDatabase;
 
 const QString currenciesTable = R"(
@@ -9,7 +15,7 @@ const QString currenciesTable = R"(
 )";
 
 
-class Currency
+class BACKEND_EXPORT Currency
 {
     QString name, code, symbol;
     double rate;
