@@ -16,15 +16,16 @@ class BACKEND_EXPORT CurrenciesManager
 
     QSqlDatabase& db;
     QMap<QString, double> _currencies;
-    QString _baseCurrency;
+    QString _base;
     QString apiKey;
     QDateTime lastUpdate;
 
 public:
     CurrenciesManager(QSqlDatabase& db);
 
-    QStringList codes() const { return _currencies.keys(); };
+    QStringList codes() const { auto codes = _currencies.keys(); codes.removeAll(_base); codes.prepend(_base); return codes; }
     QMap<QString, double> currencies() const { return _currencies; }
-    QString base() const { return _baseCurrency; }
+    QString base() const { return _base; }
+    double value(QString key) const { return _currencies.value(key, 0.0); }
 };
 

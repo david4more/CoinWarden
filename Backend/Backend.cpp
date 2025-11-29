@@ -44,7 +44,7 @@ bool Backend::setupDefault()
 {
     if (!defaultSetupAvailable) return false;
     if (_transactions == nullptr || _categories == nullptr || _currencies == nullptr || _accounts == nullptr) return false;
-    return (_transactions->setupDefault() && _categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault());
+    return (/*_transactions->setupDefault() && */_categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault());
 }
 
 Backend::~Backend()

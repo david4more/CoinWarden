@@ -8,19 +8,24 @@
 
 CurrenciesManager::CurrenciesManager(QSqlDatabase& db) : db(db)
 {
-    _baseCurrency = "EUR";
-    QString currencies = "EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY";
-    for (auto x : currencies.split(',')) _currencies.insert(x, 0.0);
+    _base = "EUR";
+    QSqlQuery query(db);
+    query.prepare("SELECT * FROM currencies");
+    if (!query.exec()) qDebug() << "Failed to execute CurrenciesManager::CurrenciesManager query";
+    else while (query.next()) _currencies[query.value(0).toString()] = query.value(1).toDouble();
+
     apiKey = qgetenv("CURRENCY_API_KEY");
     Q_ASSERT(!apiKey.isEmpty());
 }
 
 bool CurrenciesManager::setupDefault()
 {
+    QString currencies = "EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY";
+
     QUrl url("https://api.currencyapi.com/v3/latest");
     QUrlQuery urlQuery;
-    urlQuery.addQueryItem("currencies", _currencies.keys().join(","));
-    urlQuery.addQueryItem("base_currency", _baseCurrency);
+    urlQuery.addQueryItem("currencies", currencies);
+    urlQuery.addQueryItem("base_currency", _base);
     url.setQuery(urlQuery);
 
     QNetworkRequest request(url);
@@ -31,7 +36,6 @@ bool CurrenciesManager::setupDefault()
 
     QString lastUpdated = rootObj["meta"].toObject()["last_updated_at"].toString();
     lastUpdate = QDateTime::fromString(lastUpdated, Qt::ISODate);
-    qDebug() << "Last update: " << lastUpdate.toString();
 
     QSqlQuery query(db);
 
@@ -43,6 +47,7 @@ bool CurrenciesManager::setupDefault()
     for (int i = 0; i < obj.size(); ++i) {
         QString code = names[i];
         double rate = obj[code].toObject()["value"].toDouble();
+        _currencies[code] = rate;
         query.bindValue(":code", code);
         query.bindValue(":rate", rate);
         query.exec();

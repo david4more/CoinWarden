@@ -8,14 +8,19 @@ bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &source
     QModelIndex indexCategory = sourceModel()->index(sourceRow, 2, sourceParent);
     QModelIndex indexAmount   = sourceModel()->index(sourceRow, 0, sourceParent);
 
-    QString cat = sourceModel()->data(indexCategory, Qt::UserRole).toString();
-    float amt  = sourceModel()->data(indexAmount, Qt::UserRole).toFloat();
+    QString cat = sourceModel()->data(indexCategory).toString();
+    float amt  = sourceModel()->data(indexAmount).toFloat();
 
     if (useCategoryFilter && !categories.contains(cat)) return false;
     if (useMinFilter && amt < minAmount) return false;
     if (useMaxFilter && amt > maxAmount) return false;
 
     return true;
+}
+
+bool TransactionProxy::lessThan(const QModelIndex& left, const QModelIndex& right) const
+{
+    return QSortFilterProxyModel::lessThan(left, right);
 }
 
 void TransactionProxy::useFilters(Filters f)
@@ -56,7 +61,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
-        case 0: return QString("%1%2").arg(t.currency).arg(t.amount);       // help
+        case 0: return QString("%1%2").arg(t.currency + (t.amount < 0 ? "" : " ")).arg(t.amount);
         case 1: return t.dateTime.toString("MMM dd, hh:mm");
         case 2: return t.category;
         case 3: return t.account;
@@ -65,7 +70,8 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
     }
     else if (role == Qt::UserRole) {
         switch (index.column()) {
-        case 0: return currencies[t.currency] * t.amount;
+        case 0: qDebug() << t.currency << ' ' << t.amount << " - " << t.amount / currencies[t.currency];
+            return t.amount / currencies[t.currency];
         case 2: return t.category;
         }
     }

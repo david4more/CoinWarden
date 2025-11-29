@@ -25,8 +25,9 @@ class BACKEND_EXPORT TransactionProxy : public QSortFilterProxyModel {
     float minAmount = 0.f, maxAmount = 0.f;
     bool useCategoryFilter = false, useMinFilter = false, useMaxFilter = false;
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 public:
-    explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) {}
+    explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) { setSortRole(Qt::UserRole); setFilterRole(Qt::UserRole); }
 
     struct Filters {
         bool enabled = true;

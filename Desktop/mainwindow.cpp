@@ -100,6 +100,8 @@ void MainWindow::setupUI()
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
 
+    for (auto c : backend->currencies()->codes()) qDebug() << backend->currencies()->value(c);
+
     connectSlots();
     setupTransactionsTable();
     setupButtonGroups();
@@ -112,6 +114,20 @@ void MainWindow::setupUI()
 
     setupFinancesPlot(ui->financesPlot);
     setupCategoriesPlot(ui->categoriesPlot);
+}
+
+void MainWindow::updateData() const
+{
+    auto updateCombo = [&](QComboBox* box, QStringList list) {
+        box->clear();
+        for (const auto& x : list) box->addItem(x);
+    };
+    updateCombo(ui->tCurrency, backend->currencies()->codes());
+    updateCombo(ui->tAccount, backend->accounts()->names());
+    updateCombo(ui->tCategory, backend->categories()->getNames(CategoryType::Expense));
+
+    updateCombo(ui->fExpenseCategories, backend->categories()->getNames(CategoryType::Expense));
+    updateCombo(ui->fIncomeCategories, backend->categories()->getNames(CategoryType::Income));
 }
 
 void MainWindow::setupFinancesPlot(QCustomPlot *plot) const
@@ -197,20 +213,6 @@ void MainWindow::updateTransactions() const
 {
     ui->dateButton->setText(from.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(from, to));
-}
-
-void MainWindow::updateData() const
-{
-    auto updateCombo = [&](QComboBox* box, QStringList list) {
-        box->clear();
-        for (const auto& x : list) box->addItem(x);
-    };
-    updateCombo(ui->tCurrency, backend->currencies()->codes());
-    updateCombo(ui->tAccount, backend->accounts()->names());
-    updateCombo(ui->tCategory, backend->categories()->getNames(CategoryType::Expense));
-
-    updateCombo(ui->fExpenseCategories, backend->categories()->getNames(CategoryType::Expense));
-    updateCombo(ui->fIncomeCategories, backend->categories()->getNames(CategoryType::Income));
 }
 
 void MainWindow::setupCategoriesPlot(QCustomPlot *plot) const
