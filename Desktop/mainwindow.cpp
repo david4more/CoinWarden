@@ -95,7 +95,7 @@ void MainWindow::setupUI()
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
 
-    model = new TransactionModel(ui->centralwidget);
+    model = new TransactionModel(ui->centralwidget, backend->currencies()->currencies());
     proxy = new TransactionProxy(ui->centralwidget);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);

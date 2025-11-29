@@ -9,8 +9,9 @@ class BACKEND_EXPORT TransactionModel : public QAbstractTableModel
 {
     Q_OBJECT
     QVector<Transaction> transactions;
+    QMap<QString, double> currencies;
 public:
-    explicit TransactionModel(QObject* parent) : QAbstractTableModel(parent) {}
+    explicit TransactionModel(QObject* parent, QMap<QString, double> currencies) : QAbstractTableModel(parent), currencies(currencies) {}
 
     void setTransactions(QVector<Transaction>&& t);
     int rowCount(const QModelIndex&) const override { return transactions.size(); }

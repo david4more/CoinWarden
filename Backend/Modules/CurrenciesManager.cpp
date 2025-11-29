@@ -1,37 +1,54 @@
 #include "CurrenciesManager.h"
 #include "NetworkManager.h"
+#include "pch.h"
 #include <QNetworkReply>
 #include <QUrlQuery>
 #include <QJsonObject>
+#include <QtWidgets/qmessagebox.h>
 
 CurrenciesManager::CurrenciesManager(QSqlDatabase& db) : db(db)
 {
     _baseCurrency = "EUR";
     QString currencies = "EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY";
     for (auto x : currencies.split(',')) _currencies.insert(x, 0.0);
-    apiKey = "cur_live_8hmo833CJvaq1hSZ5DW2vy5md8ZFRWKpOp5CiEGY";
+    apiKey = qgetenv("CURRENCY_API_KEY");
+    Q_ASSERT(!apiKey.isEmpty());
 }
 
 bool CurrenciesManager::setupDefault()
 {
-    QString currencies = _currencies.keys().join(",");
-    qDebug() << currencies;
-
     QUrl url("https://api.currencyapi.com/v3/latest");
-    QUrlQuery query;
-    query.addQueryItem("currencies", currencies);
-    query.addQueryItem("base_currency", _baseCurrency);
-    url.setQuery(query);
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem("currencies", _currencies.keys().join(","));
+    urlQuery.addQueryItem("base_currency", _baseCurrency);
+    url.setQuery(urlQuery);
 
     QNetworkRequest request(url);
     request.setRawHeader("apikey", apiKey.toUtf8());
 
-    // QJsonObject obj = NetworkManager::executeNetworkRequest(request);
+    QJsonObject rootObj = NetworkManager::blockingNetworkRequest(request); qDebug() << "CurrencyAPI was called";
+    QJsonObject obj = rootObj["data"].toObject();
 
-    // move ts to onFirstLaunch, handle work with currencies table
+    QString lastUpdated = rootObj["meta"].toObject()["last_updated_at"].toString();
+    lastUpdate = QDateTime::fromString(lastUpdated, Qt::ISODate);
+    qDebug() << "Last update: " << lastUpdate.toString();
 
+    QSqlQuery query(db);
 
-    qDebug() << "oops\noopsy\noopsydoopsy";
+    auto names = obj.keys();
+
+    if (!db.transaction()) { qDebug() << "Failed to initialize a transaction"; return false; }
+
+    query.prepare("INSERT INTO currencies (code, rate) VALUES (:code, :rate)");
+    for (int i = 0; i < obj.size(); ++i) {
+        QString code = names[i];
+        double rate = obj[code].toObject()["value"].toDouble();
+        query.bindValue(":code", code);
+        query.bindValue(":rate", rate);
+        query.exec();
+    }
+
+    if (!db.commit()) { qDebug() << "Failed to commit transaction"; return false; }
 
     return true;
 }

@@ -1,12 +1,13 @@
 #pragma once
-#include <QObject>
+class QNetworkAccessManager;
 class QNetworkRequest;
 
-class NetworkManager : public QObject
+class NetworkManager
 {
-    Q_OBJECT
+    static QNetworkAccessManager* mgr;
+    static QJsonObject parseJsonResponse(QByteArray data);
 
 public:
-    QJsonObject executeNetworkRequest(QNetworkRequest request);
-    NetworkManager(QObject* parent = nullptr) : QObject(parent) {}
+    static QJsonObject blockingNetworkRequest(const QNetworkRequest& request, int timeoutMs = 5000);
+    static void asyncNetworkRequest(const QNetworkRequest& request, std::function<void(QJsonObject)> callback);
 };

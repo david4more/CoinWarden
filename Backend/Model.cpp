@@ -56,9 +56,8 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
-        case 0: return QString("%1%2").arg(t.currency).arg(t.amount);
-        case 1: // qDebug() << t.dateTime.isValid() << t.dateTime.isNull() << t.dateTime.toString("MMM dd, hh:mm");
-            return t.dateTime.toString("MMM dd, hh:mm");
+        case 0: return QString("%1%2").arg(t.currency).arg(t.amount);       // help
+        case 1: return t.dateTime.toString("MMM dd, hh:mm");
         case 2: return t.category;
         case 3: return t.account;
         case 4: return t.note.isEmpty() ? "None" : t.note;
@@ -66,7 +65,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
     }
     else if (role == Qt::UserRole) {
         switch (index.column()) {
-        case 0: return t.amount;
+        case 0: return currencies[t.currency] * t.amount;
         case 2: return t.category;
         }
     }
