@@ -1,4 +1,12 @@
 #pragma once
+
+
+#ifdef BACKEND_LIB
+#  define BACKEND_EXPORT __declspec(dllexport)
+#else
+#  define BACKEND_EXPORT __declspec(dllimport)
+#endif
+
 #include <QDate>
 
 enum class CategoryType { All, Expense, Income };

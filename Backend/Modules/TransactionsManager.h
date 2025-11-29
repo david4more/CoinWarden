@@ -1,12 +1,6 @@
 #pragma once
 
-#ifdef BACKEND_LIB
-#  define BACKEND_EXPORT __declspec(dllexport)
-#else
-#  define BACKEND_EXPORT __declspec(dllimport)
-#endif
-
-
+#include "utils.h"
 #include "utils.h"
 class QSqlDatabase;
 class Transaction;
@@ -27,6 +21,9 @@ const QString transactionsTable = R"(
 
 class BACKEND_EXPORT TransactionsManager
 {
+    friend class Backend;
+    bool setupDefault();
+
     QSqlDatabase& db;
     void normalizeMonthRange(QDate& from, QDate& to) const;
 
@@ -37,5 +34,4 @@ public:
     QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type = CategoryType::All) const;
     QVector<DailyTransactions> transactionsPerDay(const QDate& from, const QDate& to) const;
     bool add(const Transaction& t);
-    bool setupDefault();
 };

@@ -1,5 +1,5 @@
-#include "category.h"
-#include "c.h"
+#include "CategoriesManager.h"
+#include "Category.h"
 #include "pch.h"
 
 const QString CategoriesManager::defaultColor = "#00ff00";

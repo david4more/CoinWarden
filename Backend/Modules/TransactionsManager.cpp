@@ -1,5 +1,5 @@
-#include "transaction.h"
-#include "t.h"
+#include "TransactionsManager.h"
+#include "Transaction.h"
 #include "pch.h"
 #include <QDate>
 

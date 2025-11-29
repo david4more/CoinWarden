@@ -1,11 +1,6 @@
 #pragma once
 
-#ifdef BACKEND_LIB
-#  define BACKEND_EXPORT __declspec(dllexport)
-#else
-#  define BACKEND_EXPORT __declspec(dllimport)
-#endif
-
+#include "utils.h"
 class QSqlDatabase;
 
 const QString accountsTable = R"(
@@ -16,10 +11,13 @@ const QString accountsTable = R"(
 
 class BACKEND_EXPORT AccountsManager
 {
+    friend class Backend;
+    bool setupDefault();
+
     QSqlDatabase& db;
     QStringList _names;
 
 public:
-    AccountsManager(QSqlDatabase& db) : db(db) { _names = { "User1", "User2", "User cat"}; }
+    explicit AccountsManager(QSqlDatabase& db) : db(db), _names({ "User1", "User2", "User cat"}) {}
     QStringList names() const { return _names; }
 };

@@ -1,15 +1,16 @@
-#include "backend.h"
+#include "Backend.h"
 
-#include "Modules/transaction.h"
-#include "Modules/currency.h"
-#include "Modules/category.h"
-#include "Modules/account.h"
+#include "Modules/TransactionsManager.h"
+#include "Modules/CurrenciesManager.h"
+#include "Modules/CategoriesManager.h"
+#include "Modules/AccountsManager.h"
 #include <QSqlQuery>
 #include <QtDebug>
 #include <QFile>
 
-void Backend::init()
+void Backend::initialize()
 {
+    if (initialized) return;
     const QString name = "main", path = "finance.db";
 
     if (QSqlDatabase::contains(name)) {
@@ -29,19 +30,21 @@ void Backend::init()
     _categories = new CategoriesManager(db);
 
     if (isFirstLaunch) {
+        defaultSetupAvailable = true;
         QSqlQuery query(db);
         for (const auto& q : { categoriesTable, currenciesTable, accountsTable, transactionsTable })
             if (!query.exec(q)) qDebug() << "Failed to create table";
 
-        // emit firstLaunch();
-        categories()->setupDefault();
-        transactions()->setupDefault();
+        emit firstLaunch();
     }
+    initialized = true;
 }
 
-Backend::Backend()
+bool Backend::setupDefault()
 {
-    ;
+    if (!defaultSetupAvailable) return false;
+    if (_transactions == nullptr || _categories == nullptr || _currencies == nullptr || _accounts == nullptr) return false;
+    return (_transactions->setupDefault() && _categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault());
 }
 
 Backend::~Backend()

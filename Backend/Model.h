@@ -1,15 +1,8 @@
 #pragma once
 
-#ifdef BACKEND_LIB
-#  define BACKEND_EXPORT __declspec(dllexport)
-#else
-#  define BACKEND_EXPORT __declspec(dllimport)
-#endif
-
-
-#include <QAbstractTableModel>
+#include "Modules/utils.h"
 #include <QSortFilterProxyModel>
-#include "Modules/t.h"
+#include "Modules/Transaction.h"
 
 class Transaction;
 class BACKEND_EXPORT TransactionModel : public QAbstractTableModel

@@ -1,14 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "Modules/transaction.h"
-#include "Modules/currency.h"
-#include "Modules/category.h"
-#include "Modules/account.h"
-#include "../Backend/backend.h"
-#include "../Backend/model.h"
-#include "../Backend/Modules/c.h"
+#include "Modules/TransactionsManager.h"
+#include "Modules/CurrenciesManager.h"
+#include "Modules/CategoriesManager.h"
+#include "Modules/AccountsManager.h"
+#include "../Backend/Backend.h"
+#include "../Backend/Model.h"
+#include "../Backend/Modules/Category.h"
 #include "qcustomplot.h"
+
 #include <QTimer>
 #include <QButtonGroup>
 #include <QStyledItemDelegate>
@@ -90,9 +91,9 @@ void MainWindow::setupButtonGroups()
 
 void MainWindow::setupUI()
 {
-    backend = new Backend();
-    // connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
-    backend->init();
+    backend = new Backend(this);
+    connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
+    backend->initialize();
 
     model = new TransactionModel(ui->centralwidget);
     proxy = new TransactionProxy(ui->centralwidget);
@@ -253,7 +254,7 @@ void MainWindow::setupCategoriesPlot(QCustomPlot *plot) const
     plot->xAxis->setRange(0, data.size() + 1);
 
     plot->yAxis->setRange(values[0] * -0.05f, values[0] * 1.05f);
-    plot->yAxis->setLabel("Expense per category\nin " + backend->currencies()->def());
+    plot->yAxis->setLabel("Expense per category\nin " + backend->currencies()->base());
 
     plot->replot();
 }
@@ -359,6 +360,7 @@ void MainWindow::changePage(Page p)
 
 void MainWindow::onFirstLaunch()
 {
+    /*
     QDialog* dialog = new QDialog(this);
     QVBoxLayout* layout = new QVBoxLayout(dialog);
     QLabel* label = new QLabel("Welcome! Add a few categories to begin:", dialog);
@@ -393,9 +395,10 @@ void MainWindow::onFirstLaunch()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->setWindowFlag(Qt::WindowCloseButtonHint, false);
+    dialog->exec();
+    */
 
-    backend->transactions()->setupDefault();
-    backend->categories()->setupDefault(); // dialog->exec();
+    backend->setupDefault();
 }
 
 

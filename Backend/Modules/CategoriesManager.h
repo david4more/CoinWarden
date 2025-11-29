@@ -1,12 +1,5 @@
 #pragma once
 
-#ifdef BACKEND_LIB
-#  define BACKEND_EXPORT __declspec(dllexport)
-#else
-#  define BACKEND_EXPORT __declspec(dllimport)
-#endif
-
-
 #include "utils.h"
 class QSqlDatabase;
 class Category;
@@ -20,6 +13,9 @@ const QString categoriesTable = R"(
 
 class BACKEND_EXPORT CategoriesManager
 {
+    friend class Backend;
+    bool setupDefault();
+
     QSqlDatabase& db;
     static const QString defaultColor;
 
@@ -28,5 +24,4 @@ public:
     QVector<Category> get() const;
     QStringList getNames(CategoryType type = CategoryType::All) const;
     bool add(QString name, bool isExpense, QString color = defaultColor);
-    bool setupDefault();
 };
