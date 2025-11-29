@@ -22,7 +22,11 @@ public:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
         QStyleOptionViewItem opt(option);
         opt.state &= ~QStyle::State_MouseOver;
-        QStyledItemDelegate::paint(painter, opt, index); }
+
+        opt.font.setFamily("Cascadia Mono");
+
+        QStyledItemDelegate::paint(painter, opt, index);
+    }
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -95,12 +99,10 @@ void MainWindow::setupUI()
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
 
-    model = new TransactionModel(ui->centralwidget, backend->currencies()->currencies());
+    model = new TransactionModel(ui->centralwidget, backend->currencies()->currencies(), backend->currencies()->symbols());
     proxy = new TransactionProxy(ui->centralwidget);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
-
-    for (auto c : backend->currencies()->codes()) qDebug() << backend->currencies()->value(c);
 
     connectSlots();
     setupTransactionsTable();

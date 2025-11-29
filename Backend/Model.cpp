@@ -61,7 +61,10 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (index.column()) {
-        case 0: return QString("%1%2").arg(t.currency + (t.amount < 0 ? "" : " ")).arg(t.amount);
+        case 0: return QString("%1%2%3")
+            .arg(symbols[t.currency])
+            .arg(t.amount < 0 ? "" : " ")
+            .arg(t.amount);
         case 1: return t.dateTime.toString("MMM dd, hh:mm");
         case 2: return t.category;
         case 3: return t.account;
@@ -70,8 +73,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
     }
     else if (role == Qt::UserRole) {
         switch (index.column()) {
-        case 0: qDebug() << t.currency << ' ' << t.amount << " - " << t.amount / currencies[t.currency];
-            return t.amount / currencies[t.currency];
+        case 0: return t.amount / currencies[t.currency];
         case 2: return t.category;
         }
     }
