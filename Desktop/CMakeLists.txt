@@ -21,7 +21,16 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network)
 
-add_executable(Desktop ${DESKTOP_SOURCES} ${DESKTOP_HEADERS} ${DESKTOP_FORMS})
+set(DESKTOP_RESOURCES
+        files.qrc
+)
+
+add_executable(Desktop
+        ${DESKTOP_SOURCES}
+        ${DESKTOP_HEADERS}
+        ${DESKTOP_FORMS}
+        ${DESKTOP_RESOURCES}
+)
 
 target_link_libraries(Desktop PRIVATE
     Qt6::Core

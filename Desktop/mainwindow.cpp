@@ -91,6 +91,9 @@ void MainWindow::setupButtonGroups()
     group->setExclusive(true);
     group->addButton(ui->tExpense);
     group->addButton(ui->tIncome);
+
+    ui->tAddAccount->setIcon(QPixmap(":/budgetIcon"));
+    ui->tAddCategory->setIcon(QPixmap(":/categoryIcon"));
 }
 
 void MainWindow::setupUI()

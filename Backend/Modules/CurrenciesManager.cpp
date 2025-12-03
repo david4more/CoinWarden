@@ -22,7 +22,6 @@ CurrenciesManager::CurrenciesManager(QSqlDatabase& db) : db(db)
             _currencies[query.value(0).toString()] = query.value(1).toDouble();
             _symbols[query.value(0).toString()] = query.value(2).toString()[0];
         }
-
 }
 
 bool CurrenciesManager::setupDefault()
