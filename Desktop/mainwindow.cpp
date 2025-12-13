@@ -79,7 +79,7 @@ void MainWindow::setupTransactionsTable() const
 
 void MainWindow::setupButtonGroups()
 {
-    QButtonGroup* group = new QButtonGroup(this);
+    auto* group = new QButtonGroup(this);
     group->setExclusive(true);
     group->addButton(ui->noFilterButton);
     group->addButton(ui->expenseFilterButton);
