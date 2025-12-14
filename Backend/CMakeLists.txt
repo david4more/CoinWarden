@@ -2,26 +2,26 @@
 project(Backend LANGUAGES CXX)
 
 set(BACKEND_SOURCES
-        Modules/TransactionsManager.cpp
-        Modules/CurrenciesManager.cpp
-        Modules/CategoriesManager.cpp
-        Modules/AccountsManager.cpp
-        Modules/NetworkManager.cpp
+        Managers/TransactionsManager.cpp
+        Managers/CurrenciesManager.cpp
+        Managers/CategoriesManager.cpp
+        Managers/AccountsManager.cpp
+        Managers/NetworkManager.cpp
         Backend.cpp
-        Model.cpp
+        Modules/Model.cpp
 )
 
 set(BACKEND_HEADERS
-        Modules/TransactionsManager.h
-        Modules/CurrenciesManager.h
-        Modules/CategoriesManager.h
-        Modules/AccountsManager.h
-        Modules/NetworkManager.h
+        Managers/TransactionsManager.h
+        Managers/CurrenciesManager.h
+        Managers/CategoriesManager.h
+        Managers/AccountsManager.h
+        Managers/NetworkManager.h
         Modules/Category.h
         Modules/Transaction.h
         Modules/utils.h
         Backend.h
-        Model.h
+        Modules/Model.h
 )
 
 # Enable AUTOMOC so Q_OBJECT works

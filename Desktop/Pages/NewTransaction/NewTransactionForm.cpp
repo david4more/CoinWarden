@@ -2,10 +2,10 @@
 #include "ui_NewTransactionForm.h"
 
 #include "../../Backend/Modules/Transaction.h"
-#include "../../Backend/Modules/TransactionsManager.h"
-#include "../../Backend/Modules/CurrenciesManager.h"
-#include "../../Backend/Modules/AccountsManager.h"
-#include "../../Backend/Modules/CategoriesManager.h"
+#include "../../../Backend/Managers/TransactionsManager.h"
+#include "../../../Backend/Managers/CurrenciesManager.h"
+#include "../../../Backend/Managers/AccountsManager.h"
+#include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Backend.h"
 #include <QTimer>
 #include <QButtonGroup>

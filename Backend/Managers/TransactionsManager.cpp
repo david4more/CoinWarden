@@ -1,6 +1,6 @@
 #include "TransactionsManager.h"
-#include "Transaction.h"
-#include "pch.h"
+#include "../Modules/Transaction.h"
+#include "../Modules/pch.h"
 #include <QDate>
 
 bool TransactionsManager::add(const Transaction& t)

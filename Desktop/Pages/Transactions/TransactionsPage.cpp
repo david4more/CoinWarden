@@ -2,10 +2,10 @@
 #include "ui_TransactionsPage.h"
 
 #include "../../Backend/Backend.h"
-#include "../../Backend/Modules/CategoriesManager.h"
-#include "../../Backend/Modules/TransactionsManager.h"
-#include "../../Backend/Modules/CurrenciesManager.h"
-#include "../../Backend/Model.h"
+#include "../../../Backend/Managers/CategoriesManager.h"
+#include "../../../Backend/Managers/TransactionsManager.h"
+#include "../../../Backend/Managers/CurrenciesManager.h"
+#include "../../../Backend/Modules/Model.h"
 #include "../Utils.h"
 #include <QStyledItemDelegate>
 #include <QCheckBox>

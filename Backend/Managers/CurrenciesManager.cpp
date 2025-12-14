@@ -1,6 +1,6 @@
 #include "CurrenciesManager.h"
 #include "NetworkManager.h"
-#include "pch.h"
+#include "../Modules/pch.h"
 #include <QNetworkReply>
 #include <QUrlQuery>
 #include <QJsonObject>

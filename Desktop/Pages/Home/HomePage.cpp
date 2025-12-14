@@ -3,8 +3,8 @@
 #include "../QCustomPlot/qcustomplot.h"
 
 #include "../Backend/Backend.h"
-#include "../Backend/Modules/TransactionsManager.h"
-#include "../Backend/Modules/CurrenciesManager.h"
+#include "../../../Backend/Managers/TransactionsManager.h"
+#include "../../../Backend/Managers/CurrenciesManager.h"
 #include <QDateTime>
 
 HomePage::HomePage(Backend* backend, QWidget* parent) :

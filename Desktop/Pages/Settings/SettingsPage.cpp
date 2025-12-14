@@ -3,9 +3,8 @@
 
 #include <QPushButton>
 #include <Backend.h>
-#include <QMessageBox>
 
-#include "TransactionsManager.h"
+#include "../../../Backend/Managers/TransactionsManager.h"
 
 SettingsPage::SettingsPage(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::SettingsPage), backend(backend)

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Utils.h"
-#include "Utils.h"
+#include "../Modules/Utils.h"
 class QSqlDatabase;
 class Transaction;
 

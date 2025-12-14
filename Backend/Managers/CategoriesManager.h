@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils.h"
+#include "../Modules/Utils.h"
 class QSqlDatabase;
 class Category;
 const QString categoriesTable = R"(

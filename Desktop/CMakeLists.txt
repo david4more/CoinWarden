@@ -13,7 +13,7 @@ set(DESKTOP_SOURCES
 
 set(DESKTOP_HEADERS
     mainwindow.h
-    Utils.h
+    Pages/Utils.h
     Pages/Settings/SettingsPage.h
     Pages/Home/HomePage.h
     Pages/Transactions/TransactionsPage.h
@@ -38,7 +38,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network)
 
 set(DESKTOP_RESOURCES
-        files.qrc
+        Files/files.qrc
 )
 
 add_executable(Desktop

@@ -1,6 +1,6 @@
 #include "CategoriesManager.h"
-#include "Category.h"
-#include "pch.h"
+#include "../Modules/Category.h"
+#include "../Modules/pch.h"
 
 const QString CategoriesManager::defaultColor = "#00ff00";
 

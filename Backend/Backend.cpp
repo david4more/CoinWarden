@@ -1,9 +1,9 @@
 #include "Backend.h"
 
-#include "Modules/TransactionsManager.h"
-#include "Modules/CurrenciesManager.h"
-#include "Modules/CategoriesManager.h"
-#include "Modules/AccountsManager.h"
+#include "Managers/TransactionsManager.h"
+#include "Managers/CurrenciesManager.h"
+#include "Managers/CategoriesManager.h"
+#include "Managers/AccountsManager.h"
 #include <QSqlQuery>
 #include <QtDebug>
 #include <QFile>

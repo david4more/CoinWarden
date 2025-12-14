@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file alias = "budgetIcon">Files/add_list.png</file>
-        <file alias = "categoryIcon">Files/add_label.png</file>
-    </qresource>
-</RCC>

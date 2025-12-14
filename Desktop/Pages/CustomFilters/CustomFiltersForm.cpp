@@ -2,7 +2,7 @@
 #include "ui_CustomFiltersForm.h"
 
 #include "../../Backend/Backend.h"
-#include "../../Backend/Modules/CategoriesManager.h"
+#include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Modules/Utils.h"
 
 CustomFiltersForm::CustomFiltersForm(Backend* backend, QWidget* parent) :

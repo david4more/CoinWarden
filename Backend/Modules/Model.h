@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Modules/Utils.h"
+#include "Utils.h"
 #include <QSortFilterProxyModel>
-#include "Modules/Transaction.h"
+#include "Transaction.h"
 
 class Transaction;
 class BACKEND_EXPORT TransactionModel : public QAbstractTableModel
