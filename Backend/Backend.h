@@ -26,10 +26,12 @@ public:
     CategoriesManager* categories() { return _categories; }
 
     bool setupDefault();
+    bool generateTransactions();
 
 private:
+    bool createTables();
+
     bool initialized = false;
-    bool defaultSetupAvailable = false;
     QSqlDatabase db;
     TransactionsManager* _transactions = nullptr;
     CurrenciesManager* _currencies = nullptr;

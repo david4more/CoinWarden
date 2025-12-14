@@ -29,7 +29,7 @@ void SettingsPage::onResetTransactions()
         QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
         return;
 
-    this->backend->transactions()->setupDefault();
+    this->backend->generateTransactions();
     emit updateUI();
 }
 

@@ -4,20 +4,33 @@
 
 const QString CategoriesManager::defaultColor = "#00ff00";
 
-QVector<Category> CategoriesManager::get() const
+int CategoriesManager::findId(QString name, bool isExpense) const
 {
     QSqlQuery query(db);
 
-    query.prepare("SELECT name, color, isExpense FROM categories");
+    query.prepare("SELECT id FROM categories WHERE name = :name AND isExpense = :isExpense");
+    query.bindValue(":name", name);
+    query.bindValue(":isExpense", isExpense? 1 : 0);
+
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::lookUpId query"; return -1; }
+    if (!query.next()) { qDebug() << "Category not found"; return -1; }
+
+    return query.value(0).toInt();
+}
+
+bool CategoriesManager::init()
+{
+    QSqlQuery query(db);
+
+    query.prepare("SELECT id, name, isExpense, color FROM categories");
 
     if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::get query"; return {}; }
 
-    QVector<Category> ret;
-
     while (query.next())
-        ret.push_back(Category{query.value(0).toString(), query.value(1).toString(), query.value(2).toBool()});
+        _categories.push_back(
+            Category(query.value(0).toInt(), query.value(1).toString(), query.value(2).toBool(), query.value(3).toString()));
 
-    return ret;
+    return true;
 }
 
 QStringList CategoriesManager::getNames(CategoryType type) const
@@ -66,6 +79,13 @@ bool CategoriesManager::setupDefault()
 bool CategoriesManager::add(QString name, bool isExpense, QString color)
 {
     QSqlQuery query(db);
+    query.prepare("SELECT 1 FROM categories WHERE name = :name AND isExpense = :isExpense LIMIT 1");
+    query.bindValue(":name", name);
+    query.bindValue(":isExpense", isExpense? 1 : 0);
+
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::add query"; return false; }
+    if (query.next()) { qDebug() << "Category already exists"; return false; }
+    query.clear();
 
     query.prepare("INSERT INTO categories (name, color, isExpense) VALUES (:name, :color, :isExpense)");
 
@@ -76,6 +96,11 @@ bool CategoriesManager::add(QString name, bool isExpense, QString color)
     if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::add query"; return false; }
 
     return true;
+}
+
+QVector<Category> CategoriesManager::get() const
+{
+    return _categories;
 }
 
 

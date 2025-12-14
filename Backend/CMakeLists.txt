@@ -2,17 +2,18 @@
 project(Backend LANGUAGES CXX)
 
 set(BACKEND_SOURCES
+        Backend.cpp
+        Modules/Model.cpp
         Managers/TransactionsManager.cpp
         Managers/CurrenciesManager.cpp
         Managers/CategoriesManager.cpp
         Managers/AccountsManager.cpp
         Managers/NetworkManager.cpp
-        Backend.cpp
-        Modules/Model.cpp
-        Modules/Transaction.cpp
 )
 
 set(BACKEND_HEADERS
+        Backend.h
+        Modules/Model.h
         Managers/TransactionsManager.h
         Managers/CurrenciesManager.h
         Managers/CategoriesManager.h
@@ -21,8 +22,6 @@ set(BACKEND_HEADERS
         Modules/Category.h
         Modules/Transaction.h
         Modules/utils.h
-        Backend.h
-        Modules/Model.h
         Modules/Currency.h
 )
 

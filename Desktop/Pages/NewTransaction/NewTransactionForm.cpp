@@ -75,7 +75,7 @@ void NewTransactionForm::onAddTransaction()
     t.amount = (ui->income->isChecked()) ? ui->amount->value() : -ui->amount->value();
     t.currency = ui->currency->currentText();
     t.dateTime = QDateTime(ui->date->date(), ui->time->time());
-    t.category = ui->category->currentText();
+    t.category = backend->categories()->findId(ui->category->currentText(), ui->expense->isChecked());
     t.account = ui->account->currentText();
     t.note = ui->note->text();
 

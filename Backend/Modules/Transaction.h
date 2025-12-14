@@ -9,8 +9,8 @@ const QString transactionsTable = R"(
     dateTime TEXT,
     note TEXT,
     currency TEXT,
-    category int,
-    account int,
+    category INTEGER,
+    account INTEGER,
     FOREIGN KEY(currency) REFERENCES currencies(code),
     FOREIGN KEY(category) REFERENCES categories(id),
     FOREIGN KEY(account) REFERENCES accounts(id))
@@ -24,14 +24,16 @@ public:
     double amount;
     QDateTime dateTime;
     QString note;
+
     QString currency;
-    QString category;
+    int category = -1;
     QString account;
 
-    Transaction(double amount, QString currency, QDateTime dateTime, int category = -1, int budget = -1);
     Transaction() = default;
+    Transaction(double amount, QString currency, QDateTime dateTime, int category, QString budget) :
+        amount(amount), currency(currency), dateTime(dateTime), category(category), account(budget) {}
 
     explicit operator bool() const {
-        return !(amount == 0.f || currency.isEmpty() || dateTime.isNull() || category.isEmpty() || account.isEmpty());
+        return !(amount == 0.f || currency.isEmpty() || dateTime.isNull() || category < 0 || account.isEmpty());
     }
 };
