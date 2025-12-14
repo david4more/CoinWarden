@@ -1,5 +1,5 @@
 #pragma once
-#include "utils.h"
+#include "Utils.h"
 class QSqlDatabase;
 
 const QString currenciesTable = R"(

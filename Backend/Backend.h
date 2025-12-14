@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Modules/utils.h"
+#include "Modules/Utils.h"
 #include <QObject>
 #include <QSqlDatabase>
 class TransactionsManager;

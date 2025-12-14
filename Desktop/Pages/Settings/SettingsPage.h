@@ -3,21 +3,14 @@
 #include <QWidget>
 class Backend;
 
-QT_BEGIN_NAMESPACE
-
-namespace Ui
-{
-    class SettingsPage;
-}
-
-QT_END_NAMESPACE
+namespace Ui { class SettingsPage; }
 
 class SettingsPage : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SettingsPage(QWidget* parent = nullptr, Backend* backend = nullptr);
+    explicit SettingsPage(Backend* backend, QWidget* parent = nullptr);
     ~SettingsPage() override;
 
 signals:

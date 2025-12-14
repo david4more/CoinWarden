@@ -5,16 +5,29 @@ set(DESKTOP_SOURCES
     main.cpp
     mainwindow.cpp
     Pages/Settings/SettingsPage.cpp
+    Pages/Home/HomePage.cpp
+    Pages/Transactions/TransactionsPage.cpp
+    Pages/NewTransaction/NewTransactionForm.cpp
+    Pages/CustomFilters/CustomFiltersForm.cpp
 )
 
 set(DESKTOP_HEADERS
     mainwindow.h
+    Utils.h
     Pages/Settings/SettingsPage.h
+    Pages/Home/HomePage.h
+    Pages/Transactions/TransactionsPage.h
+    Pages/NewTransaction/NewTransactionForm.h
+    Pages/CustomFilters/CustomFiltersForm.h
 )
 
 set(DESKTOP_FORMS
     mainwindow.ui
     Pages/Settings/SettingsPage.ui
+    Pages/Home/HomePage.ui
+    Pages/Transactions/TransactionsPage.ui
+    Pages/NewTransaction/NewTransactionForm.ui
+    Pages/CustomFilters/CustomFiltersForm.ui
 )
 
 # Enable AUTOMOC and AUTOUIC

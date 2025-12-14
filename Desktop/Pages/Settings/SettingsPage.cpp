@@ -7,15 +7,13 @@
 
 #include "TransactionsManager.h"
 
-SettingsPage::SettingsPage(QWidget* parent, Backend* backend) :
-    QWidget(parent), ui(new Ui::SettingsPage)
+SettingsPage::SettingsPage(Backend* backend, QWidget* parent) :
+    QWidget(parent), ui(new Ui::SettingsPage), backend(backend)
 {
     ui->setupUi(this);
 
-
-    connect(ui->resetTransactionsBtn, &QPushButton::clicked, this, [this]{ QMessageBox::information(this, "you did it!", "hehe");
+    connect(ui->resetTransactionsBtn, &QPushButton::clicked, this, [this]{
         this->backend->transactions()->setupDefault(); });
-    this->backend = backend;
 }
 
 SettingsPage::~SettingsPage()

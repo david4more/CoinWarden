@@ -2,12 +2,9 @@
 
 #include <QMainWindow>
 #include <QDate>
+#include "Utils.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
+namespace Ui { class MainWindow; }
 
 class TransactionProxy;
 class TransactionModel;
@@ -21,40 +18,20 @@ public:
     ~MainWindow();
 
 private:
-    enum Page { Home, Transactions, Settings, NewTransaction, CustomFilters };
 
     Ui::MainWindow *ui;
     Backend* backend;
-    TransactionModel* model;
-    TransactionProxy* proxy;
-    QStringList pickedCategories;
-    QDate from, to;
 
     void setupUI();
 
     // slots
-    void onMonthButton(bool next);
-    void onAddTransaction();
-    void onApplyCustomFilters();
-    void onCategoryFilterButton();
-    void onAddCategory();
     void onFirstLaunch();
 
     // helpers
-    static QVector<double> smoothGraph(const QVector<double>& data, const QVector<double>& x);
-    void updateTransactions() const;
-    void updateData() const;
-    void setupFinancesPlot(QCustomPlot *customPlot) const;
-    void setupCategoriesPlot(QCustomPlot *customPlot) const;
-
     void changePage(Page p);
-    static void highlightField(QWidget* widget, bool condition);
-    void clearTransactionForm();
 
     void setupPages();
     void connectSlots();
-    void setupTransactionsTable() const;
-    void setupButtonGroups();
 };
 
 

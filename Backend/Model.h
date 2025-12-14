@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Modules/utils.h"
+#include "Modules/Utils.h"
 #include <QSortFilterProxyModel>
 #include "Modules/Transaction.h"
 
