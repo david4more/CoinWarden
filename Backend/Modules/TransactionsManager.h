@@ -22,7 +22,6 @@ const QString transactionsTable = R"(
 class BACKEND_EXPORT TransactionsManager
 {
     friend class Backend;
-    bool setupDefault();
 
     QSqlDatabase& db;
     void normalizeMonthRange(QDate& from, QDate& to) const;
@@ -30,6 +29,7 @@ class BACKEND_EXPORT TransactionsManager
 public:
     TransactionsManager(QSqlDatabase& db) : db(db) {}
 
+    bool setupDefault();
     QVector<Transaction> get(const QDate& from, const QDate& to) const;
     QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type = CategoryType::All) const;
     QVector<DailyTransactions> transactionsPerDay(const QDate& from, const QDate& to) const;

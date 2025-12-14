@@ -26,16 +26,18 @@ bool TransactionsManager::add(const Transaction& t)
 
 bool TransactionsManager::setupDefault()
 {
-    const QVector<QString> expenseCategories = {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"};
-    const QVector<QString> incomeCategories  = {"Salary", "Help", "Bonuses" };
+    //QSqlQuery query(db);
+    //query.prepare("SELECT 1 FROM transactions LIMIT 1");
+
+    const QVector<QString> expenseCategories =
+        {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"};
+    const QVector<QString> incomeCategories  =
+        {"Salary", "Help", "Bonuses" };
 
     QDate start = QDate::currentDate().addMonths(-1);
-
-    // Seed the random number generator
     srand(static_cast<unsigned int>(QTime::currentTime().msec()));
 
-    // Generate 80 random transactions
-    for (int i = 0; i < 80; ++i) {
+    for (int i = 0; i < 100; ++i) {
         bool isExpense = rand() % 2 == 0;
         QString category = isExpense
                                ? expenseCategories[rand() % expenseCategories.size()]
@@ -56,7 +58,6 @@ bool TransactionsManager::setupDefault()
 
     return true;
 }
-
 
 QVector<DailyTransactions> TransactionsManager::transactionsPerDay(const QDate& from, const QDate& to) const
 {

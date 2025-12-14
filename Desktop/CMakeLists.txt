@@ -4,14 +4,17 @@ project(Desktop LANGUAGES CXX)
 set(DESKTOP_SOURCES
     main.cpp
     mainwindow.cpp
+    Pages/Settings/SettingsPage.cpp
 )
 
 set(DESKTOP_HEADERS
     mainwindow.h
+    Pages/Settings/SettingsPage.h
 )
 
 set(DESKTOP_FORMS
     mainwindow.ui
+    Pages/Settings/SettingsPage.ui
 )
 
 # Enable AUTOMOC and AUTOUIC

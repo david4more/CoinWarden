@@ -15,6 +15,8 @@
 #include <QStyledItemDelegate>
 #include <QDialog>
 
+#include "Pages/Settings/SettingsPage.h"
+
 class TransactionDelegate : public QStyledItemDelegate
 {
 public:
@@ -47,10 +49,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectSlots()
 {
-    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::home); });
-    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::transactions); });
-    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::settings); });
-    connect(ui->newTransactionButton, &QPushButton::clicked, this, [this]{ changePage(Page::newTransaction);});
+    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
+    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
+    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
+    connect(ui->newTransactionButton, &QPushButton::clicked, this, [this]{ changePage(Page::NewTransaction);});
     connect(ui->addTransactionButton, &QPushButton::clicked, this, &MainWindow::onAddTransaction);
     connect(ui->applyCustomFiltersButton, &QPushButton::clicked, this, &MainWindow::onApplyCustomFilters);
 
@@ -60,10 +62,15 @@ void MainWindow::connectSlots()
     connect(ui->expenseFilterButton, &QToolButton::clicked, this, [&]{  proxy->useFilters({.maxAmount = 0.f}); });
     connect(ui->incomeFilterButton, &QToolButton::clicked, this, [&]{   proxy->useFilters({.minAmount = 0.f}); });
     connect(ui->categoryFilterButton, &QToolButton::clicked, this, &MainWindow::onCategoryFilterButton);
-    connect(ui->customFilterButton, &QToolButton::clicked, this, [this]{ changePage(Page::customFilters);});
-    connect(ui->dateButton, &QToolButton::clicked, this, [this]{ changePage(Page::customFilters);});
+    connect(ui->customFilterButton, &QToolButton::clicked, this, [this]{ changePage(Page::CustomFilters);});
+    connect(ui->dateButton, &QToolButton::clicked, this, [this]{ changePage(Page::CustomFilters);});
 
     connect(ui->tExpense, &QToolButton::clicked, this, [this]{  });
+}
+
+void MainWindow::setupPages()
+{
+    ui->pages->insertWidget(2, new SettingsPage(ui->pages, backend));
 }
 
 void MainWindow::setupTransactionsTable() const
@@ -102,6 +109,7 @@ void MainWindow::setupUI()
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
 
+    setupPages();
     model = new TransactionModel(ui->centralwidget, backend->currencies()->currencies(), backend->currencies()->symbols());
     proxy = new TransactionProxy(ui->centralwidget);
     proxy->setSourceModel(model);
@@ -111,7 +119,7 @@ void MainWindow::setupUI()
     setupTransactionsTable();
     setupButtonGroups();
 
-    changePage(Page::home);
+    changePage(Page::Home);
     from = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
     to = QDate(QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().daysInMonth());
     updateTransactions();
@@ -325,7 +333,7 @@ void MainWindow::onAddTransaction()
     backend->transactions()->add(std::move(t));
 
     updateTransactions();
-    changePage(Page::transactions);
+    changePage(Page::Transactions);
 }
 
 void MainWindow::highlightField(QWidget* widget, bool condition)
@@ -360,9 +368,9 @@ void MainWindow::clearTransactionForm()
 
 void MainWindow::changePage(Page p)
 {
-    ui->pages->setCurrentIndex(p);
+    if (p == Page::NewTransaction) clearTransactionForm();
 
-    if (p == Page::newTransaction) clearTransactionForm();
+    ui->pages->setCurrentIndex(p);
 }
 
 void MainWindow::onFirstLaunch()

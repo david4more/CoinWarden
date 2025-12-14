@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 private:
-    enum Page { home, transactions, settings, newTransaction, customFilters };
+    enum Page { Home, Transactions, Settings, NewTransaction, CustomFilters };
 
     Ui::MainWindow *ui;
     Backend* backend;
@@ -51,6 +51,7 @@ private:
     static void highlightField(QWidget* widget, bool condition);
     void clearTransactionForm();
 
+    void setupPages();
     void connectSlots();
     void setupTransactionsTable() const;
     void setupButtonGroups();
