@@ -32,6 +32,7 @@ private:
     NewTransactionForm* newTransactionForm;
 
     void setupUI();
+    void updateUI();
     void onFirstLaunch();
     void changePage(Page p);
 };

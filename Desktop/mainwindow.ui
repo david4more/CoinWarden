@@ -34,13 +34,16 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>220</width>
+        <width>240</width>
         <height>16777215</height>
        </size>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QLabel" name="label_2">
            <property name="maximumSize">
@@ -87,7 +90,7 @@
             <string notr="true">font: 600 italic 20pt &quot;Cascadia Code&quot;;</string>
            </property>
            <property name="text">
-            <string>Finance</string>
+            <string>coinwarden</string>
            </property>
           </widget>
          </item>
@@ -308,7 +311,12 @@ QToolButton:checked {
          </item>
          <item>
           <property name="text">
-           <string>Move bar graph labels in legend</string>
+           <string>Paint categories bars</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Icon for category, color for budget</string>
           </property>
          </item>
         </widget>

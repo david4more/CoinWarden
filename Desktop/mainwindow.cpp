@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupUI()
 {
-    ui->label->setText("launderer");
     backend = new Backend(this);
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
@@ -39,8 +38,8 @@ void MainWindow::setupUI()
     connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
 
     connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
-        { transactionsPage->updateTransactions(); changePage(Page::Transactions); } );
-    connect(settingsPage, &SettingsPage::updateUI, this, [this]() { transactionsPage->updateTransactions(); });
+        { updateUI(); changePage(Page::Transactions); } );
+    connect(settingsPage, &SettingsPage::updateUI, this, [this](){ updateUI(); });
 
     pages = new QButtonGroup(this);
     pages->addButton(ui->home);
@@ -49,6 +48,12 @@ void MainWindow::setupUI()
     pages->setExclusive(true);
 
     changePage(Page::Home);
+}
+
+void MainWindow::updateUI()
+{
+    transactionsPage->updateTransactions();
+    homePage->updateData();
 }
 
 void MainWindow::changePage(Page p)

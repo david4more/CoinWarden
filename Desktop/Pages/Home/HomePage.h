@@ -3,6 +3,7 @@
 #include <QWidget>
 class Backend;
 class QCustomPlot;
+class QCPBars;
 
 namespace Ui { class HomePage; }
 
@@ -13,12 +14,17 @@ class HomePage : public QWidget
 public:
     explicit HomePage(Backend* backend, QWidget* parent = nullptr);
     ~HomePage() override;
+    void updateData();
 
 private:
-    void setupFinancesPlot(QCustomPlot *customPlot);
-    void setupCategoriesPlot(QCustomPlot *customPlot);
+    void updateFinancesData();
+    void updateCategoriesData();
+    void setupFinancesPlot();
+    void setupCategoriesPlot();
     QVector<double> smoothGraph(const QVector<double>& data, const QVector<double>& x);
 
+    QCPBars* expenseBar;
+    QCPBars* limitBar;
     Backend* backend;
     Ui::HomePage* ui;
 };

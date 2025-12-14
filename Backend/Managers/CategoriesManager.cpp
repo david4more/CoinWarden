@@ -4,6 +4,18 @@
 
 const QString CategoriesManager::defaultColor = "#00ff00";
 
+QMap<QString, double> CategoriesManager::getLimits() const
+{
+    QSqlQuery query(db);
+
+    if (!query.exec("SELECT name, monthlyLimit FROM categories WHERE isExpense = 1"))
+        { qDebug() << "CategoriesManager::getLimits query failed"; return {}; }
+
+    QMap<QString, double> ret;
+    while (query.next()) ret.insert(query.value(0).toString(), query.value(1).toDouble());
+    return ret;
+}
+
 int CategoriesManager::findId(QString name, bool isExpense) const
 {
     QSqlQuery query(db);
@@ -76,7 +88,7 @@ bool CategoriesManager::setupDefault()
     return true;
 }
 
-bool CategoriesManager::add(QString name, bool isExpense, QString color)
+bool CategoriesManager::add(QString name, bool isExpense, int monthlyLimit, QString color)
 {
     QSqlQuery query(db);
     query.prepare("SELECT 1 FROM categories WHERE name = :name AND isExpense = :isExpense LIMIT 1");
@@ -87,11 +99,12 @@ bool CategoriesManager::add(QString name, bool isExpense, QString color)
     if (query.next()) { qDebug() << "Category already exists"; return false; }
     query.clear();
 
-    query.prepare("INSERT INTO categories (name, color, isExpense) VALUES (:name, :color, :isExpense)");
+    query.prepare("INSERT INTO categories (name, isExpense, monthlyLimit, color) VALUES (:name, :isExpense, :monthlyLimit, :color)");
 
     query.bindValue(":name", name);
-    query.bindValue(":color", color);
     query.bindValue(":isExpense", isExpense? 1 : 0);
+    query.bindValue(":monthlyLimit", monthlyLimit);
+    query.bindValue(":color", color);
 
     if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::add query"; return false; }
 

@@ -6,8 +6,16 @@ class QSqlDatabase;
 const QString accountsTable = R"(
     CREATE TABLE accounts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL)
+    name TEXT UNIQUE NOT NULL,
+    isInternal BOOLEAN NOT NULL)
 )";
+
+class Account
+{
+    int id;
+    QString name;
+    bool isInternal;
+};
 
 class BACKEND_EXPORT AccountsManager
 {
