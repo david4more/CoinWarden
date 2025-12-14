@@ -9,6 +9,7 @@ set(BACKEND_SOURCES
         Managers/NetworkManager.cpp
         Backend.cpp
         Modules/Model.cpp
+        Modules/Transaction.cpp
 )
 
 set(BACKEND_HEADERS
@@ -22,6 +23,7 @@ set(BACKEND_HEADERS
         Modules/utils.h
         Backend.h
         Modules/Model.h
+        Modules/Currency.h
 )
 
 # Enable AUTOMOC so Q_OBJECT works

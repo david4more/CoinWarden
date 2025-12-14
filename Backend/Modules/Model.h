@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include <QSortFilterProxyModel>
 #include "Transaction.h"
+#include "Currency.h"
 
 class Transaction;
 class BACKEND_EXPORT TransactionModel : public QAbstractTableModel

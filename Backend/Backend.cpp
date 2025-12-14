@@ -4,6 +4,8 @@
 #include "Managers/CurrenciesManager.h"
 #include "Managers/CategoriesManager.h"
 #include "Managers/AccountsManager.h"
+#include "Modules/Transaction.h"
+
 #include <QSqlQuery>
 #include <QtDebug>
 #include <QFile>
@@ -37,6 +39,8 @@ void Backend::initialize()
 
         emit firstLaunch();
     }
+    _currencies->init();
+
     initialized = true;
 }
 
@@ -44,7 +48,7 @@ bool Backend::setupDefault()
 {
     if (!defaultSetupAvailable) return false;
     if (_transactions == nullptr || _categories == nullptr || _currencies == nullptr || _accounts == nullptr) return false;
-    return (/*_transactions->setupDefault() && */_categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault());
+    return (_categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault() && _transactions->setupDefault());
 }
 
 Backend::~Backend()

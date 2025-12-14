@@ -6,12 +6,11 @@
 #include "../../../Backend/Managers/TransactionsManager.h"
 #include "../../../Backend/Managers/CurrenciesManager.h"
 #include "../../../Backend/Modules/Model.h"
-#include "../Utils.h"
 #include <QStyledItemDelegate>
 #include <QCheckBox>
 #include <QPushButton>
-#include <QDialog>
 #include <QButtonGroup>
+#include <QMessageBox>
 
 class TransactionDelegate : public QStyledItemDelegate
 {
@@ -27,20 +26,17 @@ public:
     }
 };
 
+TransactionsPage::~TransactionsPage() { delete ui; }
 TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::TransactionsPage), backend(backend)
 {
     ui->setupUi(this);
 
-    connect(ui->newTransactionButton, &QPushButton::clicked, this, [this]{ changePage(Page::NewTransaction);});
     connect(ui->prevMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(false); });
     connect(ui->nextMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(true); });
-    connect(ui->noFilterButton, &QToolButton::clicked, this, [&]{       proxy->useFilters({.enabled = false}); });
-    connect(ui->expenseFilterButton, &QToolButton::clicked, this, [&]{  proxy->useFilters({.maxAmount = 0.f}); });
-    connect(ui->incomeFilterButton, &QToolButton::clicked, this, [&]{   proxy->useFilters({.minAmount = 0.f}); });
-    connect(ui->categoryFilterButton, &QToolButton::clicked, this, &TransactionsPage::onCategoryFilterButton);
-    connect(ui->customFilterButton, &QToolButton::clicked, this, [this]{ emit changePage(Page::CustomFilters);});
-    connect(ui->dateButton, &QToolButton::clicked, this, [this]{ emit changePage(Page::CustomFilters); });
+    // connect(ui->dateButton, &QToolButton::clicked, this, [this]{ emit changePage(Page::CustomFilters); });
+
+    connect(ui->newTransaction, &QPushButton::clicked, this, [this]{ emit newTransaction(); });
 
     ui->transactionsTable->resizeColumnsToContents();
     ui->transactionsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -50,7 +46,7 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     ui->transactionsTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->transactionsTable->setItemDelegate(new TransactionDelegate(this));
 
-    model = new TransactionModel(this, backend->currencies()->currencies(), backend->currencies()->symbols());
+    model = new TransactionModel(this, backend->currencies()->rates(), backend->currencies()->symbols());
     proxy = new TransactionProxy(this);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
@@ -58,13 +54,31 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     to = QDate(QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().daysInMonth());
     updateTransactions();
 
-    auto* group = new QButtonGroup(this);
-    group->setExclusive(true);
-    group->addButton(ui->noFilterButton);
-    group->addButton(ui->expenseFilterButton);
-    group->addButton(ui->incomeFilterButton);
-    group->addButton(ui->categoryFilterButton);
-    group->addButton(ui->customFilterButton);
+    filters = new QButtonGroup(this);
+    filters->setExclusive(true);
+    filters->addButton(ui->noFilter, 0);
+    filters->addButton(ui->expenseFilter, 1);
+    filters->addButton(ui->incomeFilter, 2);
+    filters->addButton(ui->categoryFilter, 3);
+    filters->addButton(ui->customFilter, 4);
+
+    connect(filters, &QButtonGroup::idClicked, this, &TransactionsPage::onFilterClicked);
+}
+
+void TransactionsPage::onFilterClicked(int index)
+{
+    switch (index) {
+    case Filter::No:
+        proxy->useFilters({.enabled = false}); break;
+    case Filter::Expense:
+        proxy->useFilters({.maxAmount = 0.f}); break;
+    case Filter::Income:
+        proxy->useFilters({.minAmount = 0.f}); break;
+    case Filter::Category:
+        onCategoryFilterButton(); break;
+    case Filter::Custom:
+        emit customFilters(); break;
+    }
 }
 
 void TransactionsPage::onCategoryFilterButton()
@@ -99,12 +113,14 @@ void TransactionsPage::onCategoryFilterButton()
 
     connect(dialog, &QDialog::finished, this, [=](int result) {
         if ((result == QDialog::Accepted && pickedCategories.empty()) || result == QDialog::Rejected)
-            ui->noFilterButton->click();
+            ui->noFilter->click();
     });
 
     updateCategoriesFilter();
     dialog->setWindowModality(Qt::WindowModal);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
+
+    dialog->adjustSize();
     dialog->show();
 }
 
@@ -120,9 +136,4 @@ void TransactionsPage::updateTransactions()
 {
     ui->dateButton->setText(from.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(from, to));
-}
-
-TransactionsPage::~TransactionsPage()
-{
-    delete ui;
 }

@@ -13,10 +13,14 @@ public:
     explicit NewTransactionForm(Backend* backend, QWidget* parent = nullptr);
     ~NewTransactionForm() override;
 
+    void clear();
+
+signals:
+    void done();
+
 private:
     void onAddTransaction();
     static void highlightField(QWidget* widget, bool condition);
-    void clearTransactionForm();
     void updateData();
 
     Backend* backend;

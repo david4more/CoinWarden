@@ -3,6 +3,7 @@
 #include "../Modules/Utils.h"
 class QSqlDatabase;
 class Category;
+
 const QString categoriesTable = R"(
     CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -52,7 +52,7 @@ bool CategoriesManager::setupDefault()
 
     if (!db.transaction()) { qDebug() << "Failed to initialize a transaction"; return false; }
 
-    for (auto n : {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"})
+    for (auto n : {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household" })
         if (!add(n, true)) { db.rollback(); return false; }
 
     for (auto n : { "Salary", "Help", "Bonuses", "Gifts" })

@@ -19,4 +19,7 @@ signals:
 private:
     Backend* backend;
     Ui::SettingsPage* ui;
+
+    void onResetTransactions();
+    void onGetCurrencies();
 };

@@ -6,9 +6,11 @@
 
 namespace Ui { class MainWindow; }
 
-class TransactionProxy;
-class TransactionModel;
-class QCustomPlot;
+class HomePage;
+class TransactionsPage;
+class SettingsPage;
+class CustomFiltersForm;
+class NewTransactionForm;
 class Backend;
 class MainWindow : public QMainWindow
 {
@@ -18,20 +20,18 @@ public:
     ~MainWindow();
 
 private:
-
     Ui::MainWindow *ui;
     Backend* backend;
 
+    HomePage* homePage;
+    TransactionsPage* transactionsPage;
+    SettingsPage* settingsPage;
+    CustomFiltersForm* customFiltersForm;
+    NewTransactionForm* newTransactionForm;
+
     void setupUI();
-
-    // slots
     void onFirstLaunch();
-
-    // helpers
     void changePage(Page p);
-
-    void setupPages();
-    void connectSlots();
 };
 
 

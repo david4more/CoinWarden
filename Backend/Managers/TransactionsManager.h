@@ -4,19 +4,6 @@
 class QSqlDatabase;
 class Transaction;
 
-const QString transactionsTable = R"(
-    CREATE TABLE transactions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    amount REAL,
-    currency TEXT,
-    dateTime TEXT,
-    category TEXT,
-    account TEXT,
-    note TEXT,
-    FOREIGN KEY(amount) REFERENCES currencies(code),
-    FOREIGN KEY(category) REFERENCES categories(id),
-    FOREIGN KEY(account) REFERENCES accounts(id))
-)";
 
 class BACKEND_EXPORT TransactionsManager
 {

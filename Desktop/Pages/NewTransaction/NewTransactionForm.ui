@@ -56,7 +56,7 @@
          <item row="2" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QDoubleSpinBox" name="tAmount">
+            <widget class="QDoubleSpinBox" name="amount">
              <property name="minimum">
               <double>0.000000000000000</double>
              </property>
@@ -66,7 +66,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="tCurrency"/>
+            <widget class="QComboBox" name="currency"/>
            </item>
           </layout>
          </item>
@@ -80,10 +80,10 @@
          <item row="3" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QDateEdit" name="tDate"/>
+            <widget class="QDateEdit" name="date"/>
            </item>
            <item>
-            <widget class="QTimeEdit" name="tTime"/>
+            <widget class="QTimeEdit" name="time"/>
            </item>
           </layout>
          </item>
@@ -97,10 +97,10 @@
          <item row="4" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_9">
            <item>
-            <widget class="QComboBox" name="tCategory"/>
+            <widget class="QComboBox" name="category"/>
            </item>
            <item>
-            <widget class="QToolButton" name="tAddCategory">
+            <widget class="QToolButton" name="addCategory">
              <property name="text">
               <string/>
              </property>
@@ -118,10 +118,10 @@
          <item row="5" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
-            <widget class="QComboBox" name="tAccount"/>
+            <widget class="QComboBox" name="account"/>
            </item>
            <item>
-            <widget class="QToolButton" name="tAddAccount">
+            <widget class="QToolButton" name="addAccount">
              <property name="text">
               <string/>
              </property>
@@ -137,14 +137,14 @@
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QLineEdit" name="tNote">
+          <widget class="QLineEdit" name="note">
            <property name="placeholderText">
             <string>What's the plot?</string>
            </property>
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QPushButton" name="addTransactionButton">
+          <widget class="QPushButton" name="add">
            <property name="text">
             <string>Add</string>
            </property>
@@ -153,7 +153,7 @@
          <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
-            <widget class="QToolButton" name="tExpense">
+            <widget class="QToolButton" name="expense">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -172,7 +172,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="tIncome">
+            <widget class="QToolButton" name="income">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                <horstretch>0</horstretch>

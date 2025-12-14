@@ -5,11 +5,8 @@
 
 bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndex indexCategory = sourceModel()->index(sourceRow, 2, sourceParent);
-    QModelIndex indexAmount   = sourceModel()->index(sourceRow, 0, sourceParent);
-
-    QString cat = sourceModel()->data(indexCategory).toString();
-    float amt  = sourceModel()->data(indexAmount).toFloat();
+    QString cat = sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString();
+    float amt   = sourceModel()->index(sourceRow, 0, sourceParent).data(filterRole()).toFloat();
 
     if (useCategoryFilter && !categories.contains(cat)) return false;
     if (useMinFilter && amt < minAmount) return false;
@@ -29,7 +26,7 @@ void TransactionProxy::useFilters(Filters f)
     useMaxFilter = false;
     useCategoryFilter = false;
 
-    if (!f.enabled){
+    if (!f.enabled) {
         invalidate();
         return;
     }

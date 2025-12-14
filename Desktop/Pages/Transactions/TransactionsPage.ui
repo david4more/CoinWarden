@@ -38,7 +38,7 @@
             <number>3</number>
            </property>
            <item>
-            <widget class="QToolButton" name="noFilterButton">
+            <widget class="QToolButton" name="noFilter">
              <property name="text">
               <string>All</string>
              </property>
@@ -51,7 +51,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="expenseFilterButton">
+            <widget class="QToolButton" name="expenseFilter">
              <property name="text">
               <string>Expense</string>
              </property>
@@ -61,7 +61,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="incomeFilterButton">
+            <widget class="QToolButton" name="incomeFilter">
              <property name="text">
               <string>Income</string>
              </property>
@@ -71,7 +71,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="categoryFilterButton">
+            <widget class="QToolButton" name="categoryFilter">
              <property name="text">
               <string>Category</string>
              </property>
@@ -81,7 +81,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="customFilterButton">
+            <widget class="QToolButton" name="customFilter">
              <property name="text">
               <string>Custom</string>
              </property>
@@ -178,7 +178,7 @@
           </spacer>
          </item>
          <item row="1" column="3">
-          <widget class="QPushButton" name="newTransactionButton">
+          <widget class="QPushButton" name="newTransaction">
            <property name="text">
             <string>New</string>
            </property>

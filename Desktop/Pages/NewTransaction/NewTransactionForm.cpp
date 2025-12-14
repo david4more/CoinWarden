@@ -10,20 +10,22 @@
 #include <QTimer>
 #include <QButtonGroup>
 
+NewTransactionForm::~NewTransactionForm() { delete ui; }
 NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::NewTransactionForm), backend(backend)
 {
     ui->setupUi(this);
 
-    connect(ui->tExpense, &QToolButton::clicked, this, [this]{  });
+    connect(ui->add, &QPushButton::clicked, this, &NewTransactionForm::onAddTransaction);
 
     auto* group = new QButtonGroup(this);
     group->setExclusive(true);
-    group->addButton(ui->tExpense);
-    group->addButton(ui->tIncome);
+    group->addButton(ui->expense);
+    group->addButton(ui->income);
 
-    ui->tAddAccount->setIcon(QPixmap(":/budgetIcon"));
-    ui->tAddCategory->setIcon(QPixmap(":/categoryIcon"));
+    ui->addAccount->setIcon(QPixmap(":/budgetIcon"));
+    ui->addCategory->setIcon(QPixmap(":/categoryIcon"));
+    updateData();
 }
 
 void NewTransactionForm::updateData()
@@ -32,9 +34,9 @@ void NewTransactionForm::updateData()
         box->clear();
         for (const auto& x : list) box->addItem(x);
     };
-    updateCombo(ui->tCurrency, backend->currencies()->codes());
-    updateCombo(ui->tAccount, backend->accounts()->names());
-    updateCombo(ui->tCategory, backend->categories()->getNames(CategoryType::Expense));
+    updateCombo(ui->currency, backend->currencies()->codes());
+    updateCombo(ui->account, backend->accounts()->names());
+    updateCombo(ui->category, backend->categories()->getNames(CategoryType::Expense));
 }
 
 void NewTransactionForm::highlightField(QWidget* widget, bool condition)
@@ -56,39 +58,32 @@ void NewTransactionForm::highlightField(QWidget* widget, bool condition)
     timer->start(2000);
 }
 
-void NewTransactionForm::clearTransactionForm()
+void NewTransactionForm::clear()
 {
-    ui->tAmount->setValue(0);
-    ui->tCurrency->setCurrentIndex(0);
-    ui->tDate->setDate(QDate::currentDate());
-    ui->tTime->setTime(QTime::currentTime());
-    ui->tCategory->setCurrentIndex(0);
-    ui->tAccount->setCurrentIndex(0);
-    ui->tNote->clear();
+    ui->amount->setValue(0);
+    ui->currency->setCurrentIndex(0);
+    ui->date->setDate(QDate::currentDate());
+    ui->time->setTime(QTime::currentTime());
+    ui->category->setCurrentIndex(0);
+    ui->account->setCurrentIndex(0);
+    ui->note->clear();
 }
 
 void NewTransactionForm::onAddTransaction()
 {
     Transaction t;
-    t.amount = (ui->tIncome->isChecked()) ? ui->tAmount->value() : -ui->tAmount->value();
-    t.currency = ui->tCurrency->currentText();
-    t.dateTime = QDateTime(ui->tDate->date(), ui->tTime->time());
-    t.category = ui->tCategory->currentText();
-    t.account = ui->tAccount->currentText();
-    t.note = ui->tNote->text();
+    t.amount = (ui->income->isChecked()) ? ui->amount->value() : -ui->amount->value();
+    t.currency = ui->currency->currentText();
+    t.dateTime = QDateTime(ui->date->date(), ui->time->time());
+    t.category = ui->category->currentText();
+    t.account = ui->account->currentText();
+    t.note = ui->note->text();
 
     if (!t) {
-        highlightField(ui->tAmount, ui->tAmount->value() == 0.f);
+        highlightField(ui->amount, ui->amount->value() == 0.f);
         return;
     }
 
     backend->transactions()->add(std::move(t));
-
-    // updateTransactions();
-    // changePage(Page::Transactions);
-}
-
-NewTransactionForm::~NewTransactionForm()
-{
-    delete ui;
+    emit done();
 }

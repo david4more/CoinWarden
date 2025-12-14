@@ -2,6 +2,7 @@
 #include "../Modules/Transaction.h"
 #include "../Modules/pch.h"
 #include <QDate>
+#include <QtWidgets/QMessageBox>
 
 bool TransactionsManager::add(const Transaction& t)
 {
@@ -26,34 +27,52 @@ bool TransactionsManager::add(const Transaction& t)
 
 bool TransactionsManager::setupDefault()
 {
-    //QSqlQuery query(db);
-    //query.prepare("SELECT 1 FROM transactions LIMIT 1");
+    QSqlQuery query(db);
+    query.exec("DELETE FROM transactions");
+    query.clear();
 
-    const QVector<QString> expenseCategories =
-        {"Food", "Entertainment", "Gifts", "Health", "Clothing", "Education", "Transport", "Household"};
-    const QVector<QString> incomeCategories  =
-        {"Salary", "Help", "Bonuses" };
+    QVector<int> expenseCategories;
+    query.exec("select id from categories where isexpense = 1");
+    while (query.next()) expenseCategories.push_back(query.value(0).toInt());
+    query.clear();
 
-    QDate start = QDate::currentDate().addMonths(-1);
+    QVector<int> incomeCategories;
+    query.exec("select id from categories where isexpense = 0");
+    while (query.next()) incomeCategories.push_back(query.value(0).toInt());
+    query.clear();
+
+    //QVector<int> budgets;
+    //query.exec("select id from budgets");
+    //while (query.next()) budgets.push_back(query.value(0).toInt());
+    //query.clear();
+
+    QVector<QString> currencies;
+    query.exec("select id from currencies");
+    while (query.next()) currencies.push_back(query.value(0).toString());
+    query.clear();
+
     srand(static_cast<unsigned int>(QTime::currentTime().msec()));
-
-    for (int i = 0; i < 100; ++i) {
+    QPair expenseRange = { 5, 100 };
+    QPair incomeRange = { 20, 200 };
+    int transactionsNumber = 200;
+    for (int i = 0; i < transactionsNumber; ++i) {
         bool isExpense = rand() % 2 == 0;
-        QString category = isExpense
+        int category = isExpense
                                ? expenseCategories[rand() % expenseCategories.size()]
                                : incomeCategories[rand() % incomeCategories.size()];
 
+        QString currency = currencies[rand() % currencies.size()];
+        QDateTime dateTime = QDateTime::currentDateTime().addDays(-(rand() % 30));
+        int budget = 1;
+
         float amount;
-        if (isExpense) {
-            amount = -(5 + rand() % 95 + (rand() % 100) / 100.0); // -5 to -100
-        } else {
-            amount = 20 + rand() % 180 + (rand() % 100) / 100.0;  // 20 to 200
-        }
+        if (isExpense)
+            amount = -(expenseRange.first + rand() % expenseRange.second + (rand() % 100) / 100.0);
+        else
+            amount = incomeRange.first + rand() % incomeRange.second + (rand() % 100) / 100.0;
 
-        // Random date in last month
-        QString account = "User1";
 
-        if (!add({ amount, "UAH", QDateTime::currentDateTime().addDays(-(rand() % 30)), category, account })) return false;
+        if (!add(std::move(Transaction(amount, currency, dateTime, category, budget)))) return false;
     }
 
     return true;
@@ -105,14 +124,15 @@ QVector<QPair<QString, double>> TransactionsManager::transactionsPerCategory(con
                   AND date(t.dateTime) BETWEEN :from AND :to
     )";
 
+    QString groupOrderBy = " GROUP BY c.name ORDER BY amount ";
     switch (type)
     {
     case CategoryType::Expense:
-        sql += " WHERE c.isExpense = 1 GROUP BY c.name ORDER BY amount ASC;"; break;
+        sql += " WHERE c.isExpense = 1 " + groupOrderBy + "ASC;"; break;
     case CategoryType::Income:
-        sql += " WHERE c.isExpense = 0 GROUP BY c.name ORDER BY amount DESC;"; break;
+        sql += " WHERE c.isExpense = 0 " + groupOrderBy + "DESC;"; break;
     case CategoryType::All:
-        sql += " GROUP BY c.name ORDER BY amount DESC;"; break;
+        sql += groupOrderBy + "DESC;"; break;
     }
 
     query.prepare(sql);

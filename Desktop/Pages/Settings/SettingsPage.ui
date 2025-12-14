@@ -89,7 +89,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="resetTransactionsBtn">
+          <widget class="QPushButton" name="resetTransactions">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>1</horstretch>
@@ -272,7 +272,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="getCurrenciesBtn">
+          <widget class="QPushButton" name="getCurrencies">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>1</horstretch>

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Modules/Utils.h"
+#include "../Modules/Currency.h"
 class QSqlDatabase;
 
 const QString currenciesTable = R"(
@@ -13,21 +14,22 @@ class BACKEND_EXPORT CurrenciesManager
 {
     friend class Backend;
     bool setupDefault();
+    bool init();
 
-    QSqlDatabase& db;
-    QMap<QString, double> _currencies;
-    QMap<QString, QChar> _symbols;
+    QVector<Currency> _currencies;
     QString _base;
-    QString apiKey;
-    QDateTime lastUpdate;
+    QSqlDatabase& db;
+    QString _apiKey;
+    QDateTime _lastUpdate;
 
 public:
-    CurrenciesManager(QSqlDatabase& db);
+    CurrenciesManager(QSqlDatabase& db) : db(db) {}
 
-    QStringList codes() const { auto codes = _currencies.keys(); codes.removeAll(_base); codes.prepend(_base); return codes; }
-    QMap<QString, double> currencies() const { return _currencies; }
-    QMap<QString, QChar> symbols() const { return _symbols; }
-    QString base() const { return _base; }
-    double value(QString key) const { return _currencies.value(key, 0.0); }
+    bool requestLatest(QString currencies, QString base);
+    QMap<QString, double> rates() const;
+    QMap<QString, QChar> symbols() const;
+    QStringList codes() const;
+    QString base() const;
+    double value(QString key) const { return rates().value(key, 0.0); }
 };
 

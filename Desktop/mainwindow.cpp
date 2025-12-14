@@ -9,6 +9,7 @@
 #include "Pages/NewTransaction/NewTransactionForm.h"
 #include "Pages/CustomFilters/CustomFiltersForm.h"
 
+MainWindow::~MainWindow() { delete ui; }
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -17,47 +18,37 @@ MainWindow::MainWindow(QWidget *parent)
     setupUI();
 }
 
-MainWindow::~MainWindow()
-{
-    backend->deleteLater();
-    delete ui;
-}
-
-void MainWindow::connectSlots()
-{
-    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
-    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
-    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
-    //connect(ui->addTransactionButton, &QPushButton::clicked, this, &MainWindow::onAddTransaction);
-    //connect(ui->applyCustomFiltersButton, &QPushButton::clicked, this, &MainWindow::onApplyCustomFilters);
-
-}
-
-void MainWindow::setupPages()
-{
-    ui->pages->addWidget(new HomePage(backend, ui->pages));
-    ui->pages->addWidget(new TransactionsPage(backend, ui->pages));
-    ui->pages->addWidget(new SettingsPage(backend, ui->pages));
-    ui->pages->addWidget(new NewTransactionForm(backend, ui->pages));
-    ui->pages->addWidget(new CustomFiltersForm(backend, ui->pages));
-}
-
 void MainWindow::setupUI()
 {
     backend = new Backend(this);
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
 
-    setupPages();
+    ui->pages->addWidget(homePage = new HomePage(backend, ui->pages));
+    ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, ui->pages));
+    ui->pages->addWidget(settingsPage = new SettingsPage(backend, ui->pages));
+    ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
+    ui->pages->addWidget(customFiltersForm = new CustomFiltersForm(backend, ui->pages));
 
-    connectSlots();
+    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
+    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
+    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
+    connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
+    connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
+
+    connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
+        { transactionsPage->updateTransactions(); changePage(Page::Transactions); } );
+    connect(settingsPage, &SettingsPage::updateUI, this, [this]() { transactionsPage->updateTransactions(); });
 
     changePage(Page::Home);
 }
 
 void MainWindow::changePage(Page p)
 {
-    // if (p == Page::NewTransaction) clearTransactionForm();
+    switch (p) {
+        case Page::NewTransaction:
+        newTransactionForm->clear(); break;
+    }
 
     ui->pages->setCurrentIndex(p);
 }
@@ -104,6 +95,7 @@ void MainWindow::onFirstLaunch()
 
     backend->setupDefault();
 }
+
 
 
 

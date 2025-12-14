@@ -7,6 +7,7 @@
 #include "../../../Backend/Managers/CurrenciesManager.h"
 #include <QDateTime>
 
+HomePage::~HomePage() { delete ui; }
 HomePage::HomePage(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::HomePage), backend(backend)
 {
@@ -25,7 +26,10 @@ void HomePage::setupFinancesPlot(QCustomPlot *plot)
     plot->graph(1)->setPen(QPen(Qt::red));
     plot->graph(1)->setBrush(QBrush(QColor(255, 0, 0, 20)));
 
-    auto data = backend->transactions()->transactionsPerDay(QDate::currentDate().addMonths(-1), QDate::currentDate());
+    auto data = backend->transactions()->transactionsPerDay(
+        QDate::currentDate().addMonths(-1),
+        QDate::currentDate());
+
     QVector<double> x(data.size()), y0(data.size()), y1(data.size());
     if (data.size() == 0) return;
     for (int i= 0; i < data.size(); ++i)
@@ -72,17 +76,17 @@ void HomePage::setupCategoriesPlot(QCustomPlot *plot)
     QVector<double> values;
     QVector<QString> labels;
     auto data = backend->transactions()->transactionsPerCategory(
-        QDate::currentDate(),
         QDate::currentDate().addMonths(-1),
+        QDate::currentDate(),
         CategoryType::Expense);
 
     if (data.size() == 0) return;
-    else
-        for (int i = 0; i < data.size(); ++i) {
-            ticks << i + 1;
-            labels << data[i].first;
-            values << -data[i].second;
-        }
+
+    for (int i = 0; i < data.size(); ++i) {
+        ticks << i + 1;
+        labels << data[i].first;
+        values << -data[i].second;
+    }
 
     expenseBar->setData(ticks, values);
 
@@ -126,7 +130,3 @@ QVector<double> HomePage::smoothGraph(const QVector<double>& data, const QVector
     return smoothed;
 }
 
-HomePage::~HomePage()
-{
-    delete ui;
-}
