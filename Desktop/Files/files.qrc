@@ -1,6 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file alias = "budgetIcon">add_list.png</file>
-        <file alias = "categoryIcon">add_label.png</file>
+        <file alias="budgetIcon">add_list.svg</file>
+        <file alias="categoryIcon">add_label.svg</file>
+        <file alias="transactionsPage">wallet.svg</file>
+        <file alias="settingsPage">cogwheel.svg</file>
+        <file alias="logo">bar_chart.svg</file>
+        <file alias="homePage">bank.svg</file>
+        <file alias="left">left_arrow.svg</file>
+        <file alias="right">right_arrow.svg</file>
     </qresource>
 </RCC>

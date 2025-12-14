@@ -2,12 +2,13 @@
 #include "ui_mainwindow.h"
 
 #include "../Backend/Backend.h"
-
 #include "Pages/Home/HomePage.h"
 #include "Pages/Transactions/TransactionsPage.h"
 #include "Pages/Settings/SettingsPage.h"
 #include "Pages/NewTransaction/NewTransactionForm.h"
 #include "Pages/CustomFilters/CustomFiltersForm.h"
+
+#include <QButtonGroup>
 
 MainWindow::~MainWindow() { delete ui; }
 MainWindow::MainWindow(QWidget *parent)
@@ -30,15 +31,21 @@ void MainWindow::setupUI()
     ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
     ui->pages->addWidget(customFiltersForm = new CustomFiltersForm(backend, ui->pages));
 
-    connect(ui->homeButton, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
-    connect(ui->transactionsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
-    connect(ui->settingsButton, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
+    connect(ui->home, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
+    connect(ui->transactions, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
+    connect(ui->settings, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
     connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
     connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
 
     connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
         { transactionsPage->updateTransactions(); changePage(Page::Transactions); } );
     connect(settingsPage, &SettingsPage::updateUI, this, [this]() { transactionsPage->updateTransactions(); });
+
+    pages = new QButtonGroup(this);
+    pages->addButton(ui->home);
+    pages->addButton(ui->transactions);
+    pages->addButton(ui->settings);
+    pages->setExclusive(true);
 
     changePage(Page::Home);
 }

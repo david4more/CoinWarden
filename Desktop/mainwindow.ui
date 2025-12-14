@@ -17,9 +17,12 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QWidget" name="panel" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
@@ -29,11 +32,261 @@
         <height>0</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>220</width>
+        <height>16777215</height>
+       </size>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LayoutDirection::LeftToRight</enum>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Shape::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Shadow::Plain</enum>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="Files/files.qrc">:/logo</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+           <property name="margin">
+            <number>8</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">font: 600 italic 20pt &quot;Cascadia Code&quot;;</string>
+           </property>
+           <property name="text">
+            <string>Finance</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QToolButton" name="home">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton {
+	padding: 0px 6px;
+    font: 500 11pt &quot;Sans Serif Collection&quot;;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,50);
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 50);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 150);
+}
+
+QToolButton:checked {
+    background-color: rgba(50, 230, 255, 80);
+    border: 1px solid rgba(50,230,255, 200);
+}</string>
+         </property>
+         <property name="text">
+          <string>  Home</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Files/files.qrc">
+           <normaloff>:/homePage</normaloff>:/homePage</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="transactions">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton {
+	padding: 0px 6px;
+    font: 500 11pt &quot;Sans Serif Collection&quot;;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,50);
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 50);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 150);
+}
+
+QToolButton:checked {
+    background-color: rgba(50, 230, 255, 80);
+    border: 1px solid rgba(50,230,255, 200);
+}</string>
+         </property>
+         <property name="text">
+          <string>  Transactions</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Files/files.qrc">
+           <normaloff>:/transactionsPage</normaloff>:/transactionsPage</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="settings">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>34</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QToolButton {
+	padding: 0px 6px;
+    font: 500 11pt &quot;Sans Serif Collection&quot;;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,50);
+}
+
+QToolButton:hover {
+    background-color: rgba(255, 255, 255, 50);
+}
+
+QToolButton:pressed {
+    background-color: rgba(255, 255, 255, 150);
+}
+
+QToolButton:checked {
+    background-color: rgba(50, 230, 255, 80);
+    border: 1px solid rgba(50,230,255, 200);
+}</string>
+         </property>
+         <property name="text">
+          <string>  Settings</string>
+         </property>
+         <property name="icon">
+          <iconset resource="Files/files.qrc">
+           <normaloff>:/settingsPage</normaloff>:/settingsPage</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="toolButtonStyle">
+          <enum>Qt::ToolButtonStyle::ToolButtonTextBesideIcon</enum>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>385</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item>
         <widget class="QListWidget" name="listWidget">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>2</verstretch>
           </sizepolicy>
@@ -50,21 +303,6 @@
          </item>
          <item>
           <property name="text">
-           <string>Home page</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Categories</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Add icons</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>Statistics/categories/budget buttons</string>
           </property>
          </item>
@@ -75,77 +313,6 @@
          </item>
         </widget>
        </item>
-       <item>
-        <widget class="QWidget" name="widget_2" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>5</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QToolButton" name="homeButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Home</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="transactionsButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Transactions</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="settingsButton">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Settings</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_2">
-            <property name="text">
-             <string>Account</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Orientation::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>291</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
     </item>
@@ -153,7 +320,7 @@
      <widget class="QStackedWidget" name="pages">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>5</horstretch>
+        <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
@@ -165,6 +332,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="Files/files.qrc"/>
+ </resources>
  <connections/>
 </ui>

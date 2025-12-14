@@ -12,6 +12,7 @@ class SettingsPage;
 class CustomFiltersForm;
 class NewTransactionForm;
 class Backend;
+class QButtonGroup;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -23,6 +24,7 @@ private:
     Ui::MainWindow *ui;
     Backend* backend;
 
+    QButtonGroup* pages;
     HomePage* homePage;
     TransactionsPage* transactionsPage;
     SettingsPage* settingsPage;
