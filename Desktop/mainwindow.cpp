@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupUI()
 {
+    ui->label->setText("launderer");
     backend = new Backend(this);
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
