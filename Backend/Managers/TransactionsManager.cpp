@@ -99,10 +99,11 @@ QVector<Transaction> TransactionsManager::get(const QDate& from, const QDate& to
     QSqlQuery query(db);
 
     query.prepare(R"(
-                  SELECT amount, currency, dateTime, category, account, note, id
-                  FROM transactions
-                  WHERE date(dateTime) BETWEEN :from AND :to
-                  ORDER BY date(dateTime) ASC
+                  SELECT t.amount, t.currency, t.dateTime, t.category, t.account, t.note, t.id, c.name
+                  FROM transactions t
+                  JOIN categories c ON t.category = c.id
+                  WHERE date(t.dateTime) BETWEEN :from AND :to
+                  ORDER BY date(t.dateTime) ASC
     )");
 
     query.bindValue(":from", from.toString(Qt::ISODate));
@@ -120,6 +121,7 @@ QVector<Transaction> TransactionsManager::get(const QDate& from, const QDate& to
         t.account   = query.value(4).toString();
         t.note      = query.value(5).toString();
         t.id        = query.value(6).toInt();
+        t.categoryName = query.value(7).toString();
 
         transactions.push_back(std::move(t));
     }

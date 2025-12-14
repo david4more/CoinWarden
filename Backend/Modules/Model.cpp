@@ -63,7 +63,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
             .arg(t.amount < 0 ? "" : " ")
             .arg(t.amount);
         case 1: return t.dateTime.toString("MMM dd, hh:mm");
-        case 2: return t.category;
+        case 2: return t.categoryName;
         case 3: return t.account;
         case 4: return t.note.isEmpty() ? "None" : t.note;
         }
