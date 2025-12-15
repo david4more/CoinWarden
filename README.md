@@ -12,9 +12,9 @@ To launch the project not in Qt Creator, add this to your configuration's
 
     Environment variables:
 
-PATH=(path to Qt)Qt\6.10.1\msvc2022\_64\bin\;
+PATH=(path to Qt)Qt\6.10.1\msvc2022\_64\bin;
 
-(path to the repo)CoinWarden\Desktop\QCustomPlot\;
+(path to the repo)\Desktop\QCustomPlot;
 
 (path to the repo)\Build\Backend
 
