@@ -20,7 +20,6 @@ signals:
 
 private:
     void onAddTransaction();
-    static void highlightField(QWidget* widget, bool condition);
     void updateData();
 
     Backend* backend;

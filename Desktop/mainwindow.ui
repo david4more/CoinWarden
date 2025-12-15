@@ -130,12 +130,12 @@ QToolButton:hover {
 }
 
 QToolButton:pressed {
-    background-color: rgba(255, 255, 255, 150);
+    background-color: rgba(255, 255, 255, 100);
 }
 
 QToolButton:checked {
-    background-color: rgba(50, 230, 255, 80);
-    border: 1px solid rgba(50,230,255, 200);
+    background-color: rgba(50, 230, 255, 75);
+    border: 1px solid rgba(50,230,255, 150);
 }</string>
          </property>
          <property name="text">
@@ -190,12 +190,12 @@ QToolButton:hover {
 }
 
 QToolButton:pressed {
-    background-color: rgba(255, 255, 255, 150);
+    background-color: rgba(255, 255, 255, 100);
 }
 
 QToolButton:checked {
-    background-color: rgba(50, 230, 255, 80);
-    border: 1px solid rgba(50,230,255, 200);
+    background-color: rgba(50, 230, 255, 75);
+    border: 1px solid rgba(50,230,255, 150);
 }</string>
          </property>
          <property name="text">
@@ -247,12 +247,12 @@ QToolButton:hover {
 }
 
 QToolButton:pressed {
-    background-color: rgba(255, 255, 255, 150);
+    background-color: rgba(255, 255, 255, 100);
 }
 
 QToolButton:checked {
-    background-color: rgba(50, 230, 255, 80);
-    border: 1px solid rgba(50,230,255, 200);
+    background-color: rgba(50, 230, 255, 75);
+    border: 1px solid rgba(50,230,255, 150);
 }</string>
          </property>
          <property name="text">

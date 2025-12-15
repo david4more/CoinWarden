@@ -7,8 +7,11 @@
 #include "../../../Backend/Managers/AccountsManager.h"
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Backend.h"
-#include <QTimer>
 #include <QButtonGroup>
+#include <QMessageBox>
+#include <QPushButton>
+
+#include "../Utils.h"
 
 NewTransactionForm::~NewTransactionForm() { delete ui; }
 NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
@@ -16,15 +19,16 @@ NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->add, &QPushButton::clicked, this, &NewTransactionForm::onAddTransaction);
+    connect(ui->add, &QToolButton::clicked, this, &NewTransactionForm::onAddTransaction);
+    connect(ui->reset, &QToolButton::clicked, this, [this]
+        { if (QMessageBox::question(this, "Confirmation", "Are you sure you want to clear the form?") == QMessageBox::Yes) clear(); });
+    connect(ui->back, &QToolButton::clicked, this, [this]{ emit done(); });
 
     auto* group = new QButtonGroup(this);
     group->setExclusive(true);
     group->addButton(ui->expense);
     group->addButton(ui->income);
 
-    ui->addAccount->setIcon(QPixmap(":/budgetIcon"));
-    ui->addCategory->setIcon(QPixmap(":/categoryIcon"));
     updateData();
 }
 
@@ -39,31 +43,11 @@ void NewTransactionForm::updateData()
     updateCombo(ui->category, backend->categories()->getNames(CategoryType::Expense));
 }
 
-void NewTransactionForm::highlightField(QWidget* widget, bool condition)
-{
-    if (!condition) return;
-
-    QTimer* timer = widget->findChild<QTimer*>("errorTimer");
-    if (!timer) {
-        timer = new QTimer(widget);
-        timer->setObjectName("errorTimer");
-        timer->setSingleShot(true);
-        connect(timer, &QTimer::timeout, [widget]() {
-            if (widget) widget->setStyleSheet("");
-        });
-    }
-
-    widget->setStyleSheet("background-color: #5a1f1f;");
-    timer->stop();
-    timer->start(2000);
-}
-
 void NewTransactionForm::clear()
 {
     ui->amount->setValue(0);
     ui->currency->setCurrentIndex(0);
-    ui->date->setDate(QDate::currentDate());
-    ui->time->setTime(QTime::currentTime());
+    ui->dateTime->setDateTime(QDateTime::currentDateTime());
     ui->category->setCurrentIndex(0);
     ui->account->setCurrentIndex(0);
     ui->note->clear();
@@ -74,13 +58,13 @@ void NewTransactionForm::onAddTransaction()
     Transaction t;
     t.amount = (ui->income->isChecked()) ? ui->amount->value() : -ui->amount->value();
     t.currency = ui->currency->currentText();
-    t.dateTime = QDateTime(ui->date->date(), ui->time->time());
+    t.dateTime = QDateTime(ui->dateTime->dateTime());
     t.category = backend->categories()->findId(ui->category->currentText(), ui->expense->isChecked());
     t.account = ui->account->currentText();
     t.note = ui->note->text();
 
     if (!t) {
-        highlightField(ui->amount, ui->amount->value() == 0.f);
+        Utils::highlightField(ui->amount, ui->amount->value() == 0.f);
         return;
     }
 

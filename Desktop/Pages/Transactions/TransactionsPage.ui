@@ -213,7 +213,7 @@
           <widget class="QPushButton" name="newTransaction">
            <property name="styleSheet">
             <string notr="true">padding: 10px 10px;
-font: 600 11pt &quot;Segoe UI&quot;;</string>
+font: 500 11pt &quot;Segoe UI&quot;;</string>
            </property>
            <property name="text">
             <string>New</string>

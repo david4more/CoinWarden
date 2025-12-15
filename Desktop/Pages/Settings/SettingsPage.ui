@@ -160,7 +160,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_5">
+          <widget class="QLineEdit" name="base">
            <property name="placeholderText">
             <string>Code</string>
            </property>
@@ -213,7 +213,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_4">
+          <widget class="QLineEdit" name="currencies">
            <property name="placeholderText">
             <string>Codes, comma-separated</string>
            </property>
