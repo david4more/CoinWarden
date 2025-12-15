@@ -71,7 +71,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
     else if (role == Qt::UserRole) {
         switch (index.column()) {
         case 0: return t.amount / currencies[t.currency];
-        case 2: return t.category;
+        case 2: return t.categoryName;
         }
     }
 

@@ -1,24 +1,21 @@
-\# Finance tracking app
+# CoinWarden – a Finance Tracking app
 
 
 
 Planned features:
 
+- Remote database integration, network-based communication
 
+- Mobile version
 
-\- Remote database integration
+To launch the project not in Qt Creator, add this to your configuration's
 
-\- Network-based communication
+    Environment variables:
 
-\- Desktop and mobile versions
+PATH=(path to Qt)Qt\6.10.1\msvc2022\_64\bin\;
 
-To launch project not in Qt Creator, add this to your configuration's
+(path to the repo)CoinWarden\Desktop\QCustomPlot\;
 
-&nbsp;	Environment variables:
+(path to the repo)\Build\Backend
 
-PATH=(path to Qt)Qt\\6.10.1\\msvc2022\_64\\bin\\;
-(path to the repo)Finance\\Desktop\\QCustomPlot\\;
-
-(path to the repo)Finance\\cmake-build-debug-visual-studio\\Backend
-
-Icons are from: www.flaticon.com/authors/pixel-perfect
+Icons, used in the app, are from: www.flaticon.com/authors/pixel-perfect
