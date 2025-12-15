@@ -22,6 +22,7 @@ void SettingsPage::onGetCurrencies()
     if (ui->currencies->text().isEmpty() || ui->base->text().isEmpty()) { QMessageBox::information(this, "Error", "Fields are empty"); return; }
 
     backend->currencies()->requestLatest("EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY", "EUR");
+    emit updateData();
 }
 
 void SettingsPage::onResetTransactions()

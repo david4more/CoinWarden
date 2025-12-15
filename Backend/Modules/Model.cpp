@@ -15,11 +15,6 @@ bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &source
     return true;
 }
 
-bool TransactionProxy::lessThan(const QModelIndex& left, const QModelIndex& right) const
-{
-    return QSortFilterProxyModel::lessThan(left, right);
-}
-
 void TransactionProxy::useFilters(Filters f)
 {
     useMinFilter = false;
@@ -71,6 +66,7 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
     else if (role == Qt::UserRole) {
         switch (index.column()) {
         case 0: return t.amount / currencies[t.currency];
+        case 1: return t.dateTime;
         case 2: return t.categoryName;
         }
     }

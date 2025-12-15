@@ -40,6 +40,7 @@ void MainWindow::setupUI()
     connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
         { updateUI(); changePage(Page::Transactions); } );
     connect(settingsPage, &SettingsPage::updateUI, this, [this](){ updateUI(); });
+    connect(settingsPage, &SettingsPage::updateData, transactionsPage, &TransactionsPage::updateData);
 
     pages = new QButtonGroup(this);
     pages->addButton(ui->home);
@@ -52,7 +53,7 @@ void MainWindow::setupUI()
 
 void MainWindow::updateUI()
 {
-    transactionsPage->updateTransactions();
+    transactionsPage->updateData();
     homePage->updateData();
 }
 

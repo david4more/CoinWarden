@@ -32,9 +32,8 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->prevMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(false); });
-    connect(ui->nextMonthButton, &QToolButton::clicked, this, [&]{      onMonthButton(true); });
-    // connect(ui->dateButton, &QToolButton::clicked, this, [this]{ emit changePage(Page::CustomFilters); });
+    connect(ui->prevMonth, &QToolButton::clicked, this, [&]{ onMonthButton(false); });
+    connect(ui->nextMonth, &QToolButton::clicked, this, [&]{ onMonthButton(true); });
 
     connect(ui->newTransaction, &QPushButton::clicked, this, [this]{ emit newTransaction(); });
 
@@ -52,7 +51,7 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     ui->transactionsTable->setModel(proxy);
     from = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
     to = QDate(QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().daysInMonth());
-    updateTransactions();
+    updateData();
 
     filters = new QButtonGroup(this);
     filters->setExclusive(true);
@@ -129,11 +128,18 @@ void TransactionsPage::onMonthButton(bool next)
     from = from.addMonths(next ? 1 : -1);
     to = QDate(from.year(), from.month(), from.daysInMonth());
 
-    updateTransactions();
+    updateData();
 }
 
-void TransactionsPage::updateTransactions()
+void TransactionsPage::updateData()
 {
-    ui->dateButton->setText(from.toString("MMMM yyyy"));
+    ui->date->setText(from.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(from, to));
 }
+
+
+
+
+
+
+

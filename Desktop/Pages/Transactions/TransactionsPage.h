@@ -18,7 +18,7 @@ public:
     explicit TransactionsPage(Backend* backend, QWidget* parent = nullptr);
     ~TransactionsPage() override;
 
-    void updateTransactions();
+    void updateData();
 
 signals:
     void newTransaction();

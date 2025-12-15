@@ -113,7 +113,7 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QToolButton" name="prevMonthButton">
+            <widget class="QToolButton" name="prevMonth">
              <property name="styleSheet">
               <string notr="true">padding: 2px 2px;</string>
              </property>
@@ -123,6 +123,9 @@
              <property name="icon">
               <iconset resource="../../Files/files.qrc">
                <normaloff>:/left</normaloff>:/left</iconset>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -143,24 +146,15 @@
             </spacer>
            </item>
            <item>
-            <widget class="QToolButton" name="dateButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>30</height>
-              </size>
-             </property>
+            <widget class="QLabel" name="date">
              <property name="styleSheet">
-              <string notr="true">padding: 2px 2px;</string>
+              <string notr="true">font: 600 12pt &quot;Sans Serif&quot;;</string>
              </property>
              <property name="text">
-              <string>...</string>
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -181,7 +175,7 @@
             </spacer>
            </item>
            <item>
-            <widget class="QToolButton" name="nextMonthButton">
+            <widget class="QToolButton" name="nextMonth">
              <property name="styleSheet">
               <string notr="true">padding: 2px 2px;</string>
              </property>
@@ -191,6 +185,9 @@
              <property name="icon">
               <iconset resource="../../Files/files.qrc">
                <normaloff>:/right</normaloff>:/right</iconset>
+             </property>
+             <property name="autoRaise">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

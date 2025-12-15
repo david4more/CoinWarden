@@ -15,6 +15,7 @@ public:
 
 signals:
     void updateUI();
+    void updateData();
 
 private:
     Backend* backend;
