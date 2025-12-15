@@ -146,15 +146,21 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="date">
+            <widget class="QToolButton" name="date">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="styleSheet">
               <string notr="true">font: 600 12pt &quot;Sans Serif&quot;;</string>
              </property>
              <property name="text">
-              <string>TextLabel</string>
+              <string>Date year</string>
              </property>
-             <property name="alignment">
-              <set>Qt::AlignmentFlag::AlignCenter</set>
+             <property name="autoRaise">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

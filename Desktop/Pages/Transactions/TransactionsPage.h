@@ -27,7 +27,7 @@ signals:
 private:
     enum Filter { No, Expense, Income, Category, Custom };
 
-    QDate from, to;
+    int month, year;
     TransactionModel* model;
     TransactionProxy* proxy;
     QButtonGroup* filters;
@@ -35,6 +35,8 @@ private:
     Backend* backend;
     Ui::TransactionsPage* ui;
 
+    QPair<QDate, QDate> getDateRange() const;
+    void onCustomMonth();
     void onFilterClicked(int index);
     void onCategoryFilterButton();
     void onMonthButton(bool next);

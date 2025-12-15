@@ -10,7 +10,9 @@
 #include <QCheckBox>
 #include <QPushButton>
 #include <QButtonGroup>
+#include <QLabel>
 #include <QMessageBox>
+#include <QSpinBox>
 
 class TransactionDelegate : public QStyledItemDelegate
 {
@@ -34,6 +36,7 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
 
     connect(ui->prevMonth, &QToolButton::clicked, this, [&]{ onMonthButton(false); });
     connect(ui->nextMonth, &QToolButton::clicked, this, [&]{ onMonthButton(true); });
+    connect(ui->date, &QToolButton::clicked, this, &TransactionsPage::onCustomMonth);
 
     connect(ui->newTransaction, &QPushButton::clicked, this, [this]{ emit newTransaction(); });
 
@@ -49,8 +52,8 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     proxy = new TransactionProxy(this);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
-    from = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
-    to = QDate(QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().daysInMonth());
+    month = QDate::currentDate().month();
+    year = QDate::currentDate().year();
     updateData();
 
     filters = new QButtonGroup(this);
@@ -123,20 +126,73 @@ void TransactionsPage::onCategoryFilterButton()
     dialog->show();
 }
 
+void TransactionsPage::onCustomMonth()
+{
+    QDialog* dialog = new QDialog(this);
+
+    dialog->setLayout(new QVBoxLayout(dialog));
+    dialog->setWindowTitle("Select month");
+
+    QLabel* monthLabel = new QLabel("Month", dialog);
+    QSpinBox* month = new QSpinBox(dialog);
+    month->setRange(1, 12);
+    month->setValue(this->month);
+
+    QLabel* yearLabel = new QLabel("Year", dialog);
+    QSpinBox* year = new QSpinBox(dialog);
+    year->setRange(1926, 2126);
+    year->setValue(this->year);
+
+    QPushButton* button = new QPushButton("Done", dialog);
+
+    dialog->layout()->addWidget(monthLabel);
+    dialog->layout()->addWidget(month);
+    dialog->layout()->addWidget(yearLabel);
+    dialog->layout()->addWidget(year);
+    dialog->layout()->addWidget(button);
+
+    connect(button, &QPushButton::clicked, dialog, [dialog, month, year, this] {
+        this->month = month->value(); this->year = year->value();
+
+        updateData(); dialog->accept();
+    });
+
+    dialog->adjustSize();
+    dialog->exec();
+}
+
 void TransactionsPage::onMonthButton(bool next)
 {
-    from = from.addMonths(next ? 1 : -1);
-    to = QDate(from.year(), from.month(), from.daysInMonth());
+    if (next) {
+        if (month == 12) { month = 1; year++; }
+        else month++;
+    } else {
+        if (month == 1) { month = 12; year--; }
+        else month--;
+    }
 
     updateData();
 }
 
 void TransactionsPage::updateData()
 {
-    ui->date->setText(from.toString("MMMM yyyy"));
-    model->setTransactions(backend->transactions()->get(from, to));
+    auto range = getDateRange();
+    ui->date->setText(range.first.toString("MMMM yyyy"));
+    model->setTransactions(backend->transactions()->get(range.first, range.second));
 }
 
+QPair<QDate, QDate> TransactionsPage::getDateRange() const
+{
+    if (month < 1 || month > 12) {
+        auto from = QDate(QDate::currentDate().year(), QDate::currentDate().month(), 1);
+        auto to = QDate(QDate::currentDate().year(), QDate::currentDate().month(), QDate::currentDate().daysInMonth());
+
+        return {from, to};
+    };
+
+    int daysInMonth = QDate(year, month, 1).daysInMonth();
+    return {QDate(year, month, 1), QDate(year, month, daysInMonth)};
+}
 
 
 
