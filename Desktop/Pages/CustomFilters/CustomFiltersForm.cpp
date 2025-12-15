@@ -5,11 +5,17 @@
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Modules/Utils.h"
 
+#include <QButtonGroup>
+
 CustomFiltersForm::CustomFiltersForm(Backend* backend, QWidget* parent) :
-    QWidget(parent), ui(new Ui::CustomFiltersForm), backend(backend)
+    QDialog(parent), ui(new Ui::CustomFiltersForm), backend(backend)
 {
     ui->setupUi(this);
 
+    QButtonGroup* buttonGroup = new QButtonGroup(this);
+    buttonGroup->addButton(ui->expense);
+    buttonGroup->addButton(ui->income);
+    buttonGroup->setExclusive(true);
 }
 
 void CustomFiltersForm::setupButtonGroups()
@@ -24,7 +30,11 @@ void CustomFiltersForm::updateData()
     };
 
     updateCombo(ui->expenseCategory, backend->categories()->getNames(CategoryType::Expense));
-    updateCombo(ui->incomeCategory, backend->categories()->getNames(CategoryType::Income));
+}
+
+void CustomFiltersForm::clearForm()
+{
+    ;
 }
 
 void CustomFiltersForm::onAddCategory()

@@ -119,11 +119,10 @@ void TransactionsPage::onCategoryFilterButton()
     });
 
     updateCategoriesFilter();
-    dialog->setWindowModality(Qt::WindowModal);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-
     dialog->adjustSize();
-    dialog->show();
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->open();
 }
 
 void TransactionsPage::onCustomMonth()

@@ -21,7 +21,7 @@ NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
 
     connect(ui->add, &QToolButton::clicked, this, &NewTransactionForm::onAddTransaction);
     connect(ui->reset, &QToolButton::clicked, this, [this]
-        { if (QMessageBox::question(this, "Confirmation", "Are you sure you want to clear the form?") == QMessageBox::Yes) clear(); });
+        { if (QMessageBox::question(this, "Confirmation", "Are you sure you want to clear the form?") == QMessageBox::Yes) clearForm(); });
     connect(ui->back, &QToolButton::clicked, this, [this]{ emit done(); });
 
     auto* group = new QButtonGroup(this);
@@ -43,7 +43,7 @@ void NewTransactionForm::updateData()
     updateCombo(ui->category, backend->categories()->getNames(CategoryType::Expense));
 }
 
-void NewTransactionForm::clear()
+void NewTransactionForm::clearForm()
 {
     ui->amount->setValue(0);
     ui->currency->setCurrentIndex(0);

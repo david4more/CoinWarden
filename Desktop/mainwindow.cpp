@@ -9,6 +9,7 @@
 #include "Pages/CustomFilters/CustomFiltersForm.h"
 
 #include <QButtonGroup>
+#include <QMessageBox>
 
 MainWindow::~MainWindow() { delete ui; }
 MainWindow::MainWindow(QWidget *parent)
@@ -29,7 +30,6 @@ void MainWindow::setupUI()
     ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, ui->pages));
     ui->pages->addWidget(settingsPage = new SettingsPage(backend, ui->pages));
     ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
-    ui->pages->addWidget(customFiltersForm = new CustomFiltersForm(backend, ui->pages));
 
     connect(ui->home, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
     connect(ui->transactions, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
@@ -60,8 +60,15 @@ void MainWindow::updateUI()
 void MainWindow::changePage(Page p)
 {
     switch (p) {
-        case Page::NewTransaction:
-        newTransactionForm->clear(); break;
+    case Page::NewTransaction:
+        newTransactionForm->clearForm();
+        break;
+    case Page::CustomFilters: {
+        CustomFiltersForm* customFiltersForm = new CustomFiltersForm(backend, this);
+        customFiltersForm->setAttribute(Qt::WA_DeleteOnClose);
+        customFiltersForm->open();
+        return;
+    }
     }
 
     ui->pages->setCurrentIndex(p);
@@ -107,7 +114,9 @@ void MainWindow::onFirstLaunch()
     dialog->exec();
     */
 
-    backend->setupDefault();
+    // backend->setupDefault();
+    QMessageBox::information(this, "Welcome!",
+        "CoinWarden launched for the first time (since last database deletion)!");
 }
 
 

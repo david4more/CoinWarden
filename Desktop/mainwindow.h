@@ -28,7 +28,6 @@ private:
     HomePage* homePage;
     TransactionsPage* transactionsPage;
     SettingsPage* settingsPage;
-    CustomFiltersForm* customFiltersForm;
     NewTransactionForm* newTransactionForm;
 
     void setupUI();

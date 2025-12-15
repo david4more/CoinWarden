@@ -13,7 +13,7 @@ public:
     explicit NewTransactionForm(Backend* backend, QWidget* parent = nullptr);
     ~NewTransactionForm() override;
 
-    void clear();
+    void clearForm();
 
 signals:
     void done();
