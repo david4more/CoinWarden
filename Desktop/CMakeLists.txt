@@ -3,22 +3,24 @@ project(Desktop LANGUAGES CXX)
 
 set(DESKTOP_SOURCES
     main.cpp
-    mainwindow.cpp
+        MainWindow.cpp
     Pages/Settings/SettingsPage.cpp
     Pages/Home/HomePage.cpp
     Pages/Transactions/TransactionsPage.cpp
     Pages/NewTransaction/NewTransactionForm.cpp
     Pages/CustomFilters/CustomFiltersForm.cpp
+    Pages/MultiSelectDialog.cpp
 )
 
 set(DESKTOP_HEADERS
-    mainwindow.h
+        MainWindow.h
     Pages/Utils.h
     Pages/Settings/SettingsPage.h
     Pages/Home/HomePage.h
     Pages/Transactions/TransactionsPage.h
     Pages/NewTransaction/NewTransactionForm.h
     Pages/CustomFilters/CustomFiltersForm.h
+    Pages/MultiSelectDialog.h
 )
 
 set(DESKTOP_FORMS
@@ -28,6 +30,7 @@ set(DESKTOP_FORMS
     Pages/Transactions/TransactionsPage.ui
     Pages/NewTransaction/NewTransactionForm.ui
     Pages/CustomFilters/CustomFiltersForm.ui
+    Pages/MultiSelectDialog.ui
 )
 
 # Enable AUTOMOC and AUTOUIC

@@ -29,8 +29,8 @@ public:
 };
 
 TransactionsPage::~TransactionsPage() { delete ui; }
-TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
-    QWidget(parent), ui(new Ui::TransactionsPage), backend(backend)
+TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy, QWidget* parent) :
+    QWidget(parent), ui(new Ui::TransactionsPage), backend(backend), model(model), proxy(proxy)
 {
     ui->setupUi(this);
 
@@ -48,8 +48,6 @@ TransactionsPage::TransactionsPage(Backend* backend, QWidget* parent) :
     ui->transactionsTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->transactionsTable->setItemDelegate(new TransactionDelegate(this));
 
-    model = new TransactionModel(this, backend->currencies()->rates(), backend->currencies()->symbols());
-    proxy = new TransactionProxy(this);
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
     month = QDate::currentDate().month();
@@ -178,11 +176,6 @@ void TransactionsPage::updateData()
     auto range = getDateRange();
     ui->date->setText(range.first.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(range.first, range.second));
-}
-
-TransactionProxy* TransactionsPage::getProxy() const
-{
-    return proxy;
 }
 
 void TransactionsPage::onCustomFiltersFinished(int result)

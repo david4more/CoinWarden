@@ -61,8 +61,9 @@ bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &source
     if (isExpense && ((amt < 0) != *isExpense)) return false;
     if (!qFuzzyIsNull(maxAmount) && amt > maxAmount) return false;
 
-    QString cat = sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString();
-    if (!categories.empty() && !categories.contains(cat)) return false;
+    if (!categories.empty() && !categories.contains(
+        sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString()))
+        return false;
 
     return true;
     QString acc = sourceModel()->index(sourceRow, 3, sourceParent).data(filterRole()).toString();

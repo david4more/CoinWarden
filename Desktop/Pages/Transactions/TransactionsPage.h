@@ -15,11 +15,10 @@ class TransactionsPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit TransactionsPage(Backend* backend, QWidget* parent = nullptr);
+    explicit TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy,  QWidget* parent = nullptr);
     ~TransactionsPage() override;
 
     void updateData();
-    TransactionProxy* getProxy() const;
     void onCustomFiltersFinished(int result);
 
 signals:

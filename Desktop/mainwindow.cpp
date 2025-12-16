@@ -8,6 +8,9 @@
 #include "Pages/NewTransaction/NewTransactionForm.h"
 #include "Pages/CustomFilters/CustomFiltersForm.h"
 
+#include "Managers/CurrenciesManager.h"
+#include "../Backend/Modules/Model.h"
+
 #include <QButtonGroup>
 #include <QMessageBox>
 
@@ -26,8 +29,11 @@ void MainWindow::setupUI()
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
 
+    model = new TransactionModel(this, backend->currencies()->rates(), backend->currencies()->symbols());
+    proxy = new TransactionProxy(this);
+
     ui->pages->addWidget(homePage = new HomePage(backend, ui->pages));
-    ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, ui->pages));
+    ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, model, proxy, ui->pages));
     ui->pages->addWidget(settingsPage = new SettingsPage(backend, ui->pages));
     ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
 
@@ -64,7 +70,7 @@ void MainWindow::changePage(Page p)
         newTransactionForm->clearForm();
         break;
     case Page::CustomFilters: {
-        auto* customFiltersForm = new CustomFiltersForm(backend, transactionsPage->getProxy(), this);
+        auto* customFiltersForm = new CustomFiltersForm(backend, proxy, this);
 
         connect(customFiltersForm, &CustomFiltersForm::finished, transactionsPage, &TransactionsPage::onCustomFiltersFinished);
 

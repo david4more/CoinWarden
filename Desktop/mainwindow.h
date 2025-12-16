@@ -2,6 +2,7 @@
 
 #include <QMainWindow>
 #include <QDate>
+
 #include "Pages/Utils.h"
 
 namespace Ui { class MainWindow; }
@@ -9,10 +10,11 @@ namespace Ui { class MainWindow; }
 class HomePage;
 class TransactionsPage;
 class SettingsPage;
-class CustomFiltersForm;
 class NewTransactionForm;
 class Backend;
 class QButtonGroup;
+class TransactionModel;
+class TransactionProxy;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -29,6 +31,9 @@ private:
     TransactionsPage* transactionsPage;
     SettingsPage* settingsPage;
     NewTransactionForm* newTransactionForm;
+
+    TransactionModel* model;
+    TransactionProxy* proxy;
 
     void setupUI();
     void updateUI();
