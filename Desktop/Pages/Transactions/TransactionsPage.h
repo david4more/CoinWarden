@@ -32,7 +32,6 @@ private:
     TransactionModel* model;
     TransactionProxy* proxy;
     QButtonGroup* filters;
-    QStringList pickedCategories;
     Backend* backend;
     Ui::TransactionsPage* ui;
 

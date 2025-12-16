@@ -5,6 +5,7 @@
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Modules/Utils.h"
 #include "../../Backend/Modules/Model.h"
+#include "../Dialog/MultiSelectDialog.h"
 
 #include <QButtonGroup>
 
@@ -36,6 +37,9 @@ void CustomFiltersForm::onApplyCustomFilters()
 {
     TransactionProxy::Filters filters;
 
+    for (auto x : MultiSelectDialog::getSelectedItems("Hello from debug",
+        {"hehe", "not hehe", "real hehe", "a", "b", "c", "d", "e", "f", "g", "h", "j" }, this))
+        qDebug() << x;
 
 
     proxy->useFilters( filters );

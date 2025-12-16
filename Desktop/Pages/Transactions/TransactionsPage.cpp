@@ -4,7 +4,7 @@
 #include "../../Backend/Backend.h"
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../../Backend/Managers/TransactionsManager.h"
-#include "../../../Backend/Managers/CurrenciesManager.h"
+#include "../Dialog/MultiSelectDialog.h"
 #include "../../../Backend/Modules/Model.h"
 #include <QStyledItemDelegate>
 #include <QCheckBox>
@@ -83,44 +83,17 @@ void TransactionsPage::onFilterClicked(int index)
 
 void TransactionsPage::onCategoryFilterButton()
 {
-    QDialog* dialog = new QDialog(this);
-    QVBoxLayout* layout = new QVBoxLayout(dialog);
+    auto categories = MultiSelectDialog::getSelectedItems(
+        "Choose categories",
+        backend->categories()->getNames(CategoryType::Expense),
+        this);
 
-    for (const auto& item : backend->categories()->getNames()) {
-        QCheckBox* box = new QCheckBox(item, dialog);
-        box->setChecked(pickedCategories.contains(item));
-        layout->addWidget(box);
+    if (categories.empty()) {
+        ui->noFilter->click();
+        return;
     }
 
-    QPushButton* button = new QPushButton("Done", dialog);
-    layout->addWidget(button);
-
-    // Update pickedCategories whenever a checkbox is clicked
-    auto updateCategoriesFilter = [dialog, this]{
-        pickedCategories.clear();
-        for (auto* box : dialog->findChildren<QCheckBox*>()) {
-            if (box->checkState() == Qt::Checked)
-                pickedCategories.append(box->text());
-        }
-
-        proxy->useFilters({.categories = pickedCategories});
-    };
-
-    for (auto* box : dialog->findChildren<QCheckBox*>())
-        connect(box, &QCheckBox::clicked, dialog, updateCategoriesFilter);
-
-    connect(button, &QPushButton::clicked, dialog, [dialog]{ dialog->accept(); });
-
-    connect(dialog, &QDialog::finished, this, [=](int result) {
-        if ((result == QDialog::Accepted && pickedCategories.empty()) || result == QDialog::Rejected)
-            ui->noFilter->click();
-    });
-
-    updateCategoriesFilter();
-    dialog->adjustSize();
-
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->open();
+    proxy->useFilters({.categories = categories});
 }
 
 void TransactionsPage::onCustomMonth()
