@@ -18,4 +18,6 @@ PATH=(path to Qt)Qt\6.10.1\msvc2022\_64\bin;
 
 (path to the repo)\Build\Backend
 
+You might also need to regenerate QCustomPlot's .dll and .lib. see www.qcustomplot.com
+
 Icons, used in the app, are from: www.flaticon.com/authors/pixel-perfect

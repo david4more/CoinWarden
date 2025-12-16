@@ -19,6 +19,8 @@ public:
     ~TransactionsPage() override;
 
     void updateData();
+    TransactionProxy* getProxy() const;
+    void onCustomFiltersFinished(int result);
 
 signals:
     void newTransaction();

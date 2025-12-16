@@ -64,7 +64,10 @@ void MainWindow::changePage(Page p)
         newTransactionForm->clearForm();
         break;
     case Page::CustomFilters: {
-        CustomFiltersForm* customFiltersForm = new CustomFiltersForm(backend, this);
+        auto* customFiltersForm = new CustomFiltersForm(backend, transactionsPage->getProxy(), this);
+
+        connect(customFiltersForm, &CustomFiltersForm::finished, transactionsPage, &TransactionsPage::onCustomFiltersFinished);
+
         customFiltersForm->setAttribute(Qt::WA_DeleteOnClose);
         customFiltersForm->open();
         return;

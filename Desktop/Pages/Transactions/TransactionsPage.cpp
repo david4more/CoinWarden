@@ -73,9 +73,9 @@ void TransactionsPage::onFilterClicked(int index)
     case Filter::No:
         proxy->useFilters({.enabled = false}); break;
     case Filter::Expense:
-        proxy->useFilters({.maxAmount = 0.f}); break;
+        proxy->useFilters({.isExpense = true }); break;
     case Filter::Income:
-        proxy->useFilters({.minAmount = 0.f}); break;
+        proxy->useFilters({.isExpense = false }); break;
     case Filter::Category:
         onCategoryFilterButton(); break;
     case Filter::Custom:
@@ -178,6 +178,17 @@ void TransactionsPage::updateData()
     auto range = getDateRange();
     ui->date->setText(range.first.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(range.first, range.second));
+}
+
+TransactionProxy* TransactionsPage::getProxy() const
+{
+    return proxy;
+}
+
+void TransactionsPage::onCustomFiltersFinished(int result)
+{
+    if (result != QDialog::Accepted)
+    ui->noFilter->click();
 }
 
 QPair<QDate, QDate> TransactionsPage::getDateRange() const

@@ -3,44 +3,83 @@
 
 // Transaction proxy methods
 
-bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+void TransactionProxy::resetValues()
 {
-    QString cat = sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString();
-    float amt   = sourceModel()->index(sourceRow, 0, sourceParent).data(filterRole()).toFloat();
+    enabled = false;
 
-    if (useCategoryFilter && !categories.contains(cat)) return false;
-    if (useMinFilter && amt < minAmount) return false;
-    if (useMaxFilter && amt > maxAmount) return false;
-
-    return true;
+    isExpense = -1;
+    categories = {}, accounts = {}, currencies = {};
+    maxAmount = 0.f;
+    note = {};
+    from = {}, to = {};
 }
 
 void TransactionProxy::useFilters(Filters f)
 {
-    useMinFilter = false;
-    useMaxFilter = false;
-    useCategoryFilter = false;
-
     if (!f.enabled) {
+        resetValues();
         invalidate();
         return;
     }
-    if (f.minAmount) {
-        useMinFilter = true;
-        minAmount = *f.minAmount;
+    enabled = true;
+
+    if (f.isExpense) {
+        isExpense = *f.isExpense ? 1 : 0;
     }
     if (f.maxAmount) {
-        useMaxFilter = true;
         maxAmount = *f.maxAmount;
     }
     if (f.categories) {
-        useCategoryFilter = true;
         categories = std::move(*f.categories);
+    }
+    if (f.accounts) {
+        accounts = std::move(*f.accounts);
+    }
+    if (f.currencies) {
+        accounts = std::move(*f.currencies);
+    }
+    if (f.from) {
+        from = *f.from;
+    }
+    if (f.to) {
+        to = *f.to;
+    }
+    if (f.note) {
+        note = *f.note;
     }
 
     invalidate();
 }
 
+bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    if (!enabled) return true;
+
+
+
+    float amt = sourceModel()->index(sourceRow, 0, sourceParent).data(filterRole()).toFloat();
+    if (isExpense && ((amt < 0) != *isExpense)) return false;
+    if (!qFuzzyIsNull(maxAmount) && amt > maxAmount) return false;
+
+    QString cat = sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString();
+    if (!categories.empty() && !categories.contains(cat)) return false;
+
+    return true;
+    QString acc = sourceModel()->index(sourceRow, 3, sourceParent).data(filterRole()).toString();
+    if (!accounts.empty() && !accounts.contains(acc)) return false;
+
+    QString cur = sourceModel()->index(sourceRow, 5, sourceParent).data(filterRole()).toString();
+    if (!currencies.empty() && !currencies.contains(cur)) return false;
+
+    QDate date  = sourceModel()->index(sourceRow, 1, sourceParent).data(filterRole()).toDate();
+    if (!from.isNull() && date < from) return false;
+    if (!to.isNull() && date > to) return false;
+
+    QString note = sourceModel()->index(sourceRow, 4, sourceParent).data(filterRole()).toString();
+    if (!note.isEmpty() && !note.contains(note)) return false;
+
+    return true;
+}
 
 
 // Transaction model methods
@@ -68,6 +107,8 @@ QVariant TransactionModel::data(const QModelIndex& index, int role) const
         case 0: return t.amount / currencies[t.currency];
         case 1: return t.dateTime;
         case 2: return t.categoryName;
+
+        case 5: return t.currency;
         }
     }
 

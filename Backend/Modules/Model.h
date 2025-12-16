@@ -22,19 +22,33 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 };
 
-class BACKEND_EXPORT TransactionProxy : public QSortFilterProxyModel {
-    QStringList categories = {};
-    float minAmount = 0.f, maxAmount = 0.f;
-    bool useCategoryFilter = false, useMinFilter = false, useMaxFilter = false;
+
+
+class BACKEND_EXPORT TransactionProxy : public QSortFilterProxyModel
+{
+    bool enabled = false;
+
+    std::optional<bool> isExpense = std::nullopt;
+    QStringList categories = {}, accounts = {}, currencies = {};
+    float maxAmount = 0.f;
+    QString note = {};
+    QDate from = {}, to = {};
+
+    void resetValues();
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+
 public:
     explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) { setSortRole(Qt::UserRole); setFilterRole(Qt::UserRole); }
 
     struct Filters {
         bool enabled = true;
-        std::optional<float> minAmount;
+        std::optional<bool> isExpense;
         std::optional<float> maxAmount;
+        std::optional<QStringList> currencies;
         std::optional<QStringList> categories;
+        std::optional<QStringList> accounts;
+        std::optional<QDate> from, to;
+        std::optional<QString> note;
     };
     void useFilters(Filters f);
 };

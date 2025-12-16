@@ -4,11 +4,12 @@
 #include "../../Backend/Backend.h"
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../Backend/Modules/Utils.h"
+#include "../../Backend/Modules/Model.h"
 
 #include <QButtonGroup>
 
-CustomFiltersForm::CustomFiltersForm(Backend* backend, QWidget* parent) :
-    QDialog(parent), ui(new Ui::CustomFiltersForm), backend(backend)
+CustomFiltersForm::CustomFiltersForm(Backend* backend, TransactionProxy* proxy, QWidget* parent) :
+    QDialog(parent), ui(new Ui::CustomFiltersForm), backend(backend), proxy(proxy)
 {
     ui->setupUi(this);
 
@@ -16,35 +17,29 @@ CustomFiltersForm::CustomFiltersForm(Backend* backend, QWidget* parent) :
     buttonGroup->addButton(ui->expense);
     buttonGroup->addButton(ui->income);
     buttonGroup->setExclusive(true);
+
+    connect(buttonGroup, &QButtonGroup::idClicked, this, &CustomFiltersForm::onButtonGroupClicked);
+    connect(ui->apply, &QPushButton::clicked, this, &CustomFiltersForm::onApplyCustomFilters);
 }
 
-void CustomFiltersForm::setupButtonGroups()
+void CustomFiltersForm::onButtonGroupClicked(int index)
 {
+    ui->category->clear();
+    //for (const auto& x : list) box->addItem(x);
 }
 
 void CustomFiltersForm::updateData()
 {
-    auto updateCombo = [&](QComboBox* box, QStringList list) {
-        box->clear();
-        for (const auto& x : list) box->addItem(x);
-    };
-
-    updateCombo(ui->expenseCategory, backend->categories()->getNames(CategoryType::Expense));
-}
-
-void CustomFiltersForm::clearForm()
-{
-    ;
-}
-
-void CustomFiltersForm::onAddCategory()
-{
-    ;
 }
 
 void CustomFiltersForm::onApplyCustomFilters()
 {
-    ;
+    TransactionProxy::Filters filters;
+
+
+
+    proxy->useFilters( filters );
+    this->accept();
 }
 
 CustomFiltersForm::~CustomFiltersForm()
