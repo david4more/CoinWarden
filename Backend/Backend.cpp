@@ -35,11 +35,11 @@ void Backend::initialize()
     if (isFirstLaunch) {
         createTables();
         setupDefault();
-        // emit firstLaunch();
+        emit firstLaunch();
     }
     else {
         _categories->init();
-        // _budgets->init();
+        // _accounts->init();
         _currencies->init();
     }
 

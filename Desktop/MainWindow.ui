@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1100</width>
+    <width>1280</width>
     <height>800</height>
    </rect>
   </property>
@@ -301,22 +301,17 @@ QToolButton:checked {
          </item>
          <item>
           <property name="text">
-           <string>Budgets for categories</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Statistics/categories/budget buttons</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>Paint categories bars</string>
           </property>
          </item>
          <item>
           <property name="text">
            <string>Icon for category, color for budget</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Work on home page</string>
           </property>
          </item>
         </widget>

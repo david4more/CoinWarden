@@ -101,6 +101,8 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
         return;
     }
 
+    if (types->checkedId() == 0) types->button(1)->setChecked(true);
+
     QStringList items;
     if (combo->currentIndex() == 1) {
         QString title = "Pick ";
@@ -120,14 +122,15 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
     else
         items += combo->currentText();
 
+    TransactionProxy::Filters filters;
+    filters.isExpense = types->checkedId() == 1;
+
     switch (filter) {
-    case Filter::Category:
-        proxy->useFilters({.categories = items}); break;
-    case Filter::Account:
-        proxy->useFilters({.accounts = items}); break;
-    case Filter::Currency:
-        proxy->useFilters({.currencies = items}); break;
+    case Filter::Category: filters.categories = items; break;
+    case Filter::Account: filters.accounts = items; break;
+    case Filter::Currency: filters.currencies = items; break;
     }
+    proxy->useFilters(filters);
 }
 
 void TransactionsPage::onTypeClicked(int index)
@@ -137,9 +140,9 @@ void TransactionsPage::onTypeClicked(int index)
     case CategoryType::All:
         proxy->resetFilters(); break;
     case CategoryType::Expense:
-        proxy->useFilters({.isExpense = true }); break;
+        proxy->useFilters({ .isExpense = true }); break;
     case CategoryType::Income:
-        proxy->useFilters({.isExpense = false }); break;
+        proxy->useFilters({ .isExpense = false }); break;
     }
 }
 

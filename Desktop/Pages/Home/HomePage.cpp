@@ -39,7 +39,7 @@ void HomePage::setupCategoriesPlot()
     expenseBar->setBrush(QBrush(QColor(Qt::red)));
 
     limitBar = new QCPBars(plot->xAxis, plot->yAxis);
-    limitBar->setPen(QPen(QColor(Qt::blue).darker(75), 2));
+    limitBar->setPen(QPen(QColor(Qt::white).darker(75), 2));
     limitBar->setBrush(QBrush(QColor(Qt::transparent)));
 
     plot->xAxis->setBasePen(QPen(Qt::white));
@@ -73,7 +73,7 @@ void HomePage::updateCategoriesData()
 
         auto label = data[i].first;
         limits << limitsData[label];
-        if (label.size() > 10) label = label.left(5) + ".";
+        if (label.size() > 10) label = label.left(6) + ".";
         labels << label;
     }
 
@@ -87,7 +87,7 @@ void HomePage::updateCategoriesData()
     plot->xAxis->setRange(0, data.size() + 1);
 
     plot->yAxis->setRange(values[0] * -0.05f, values[0] * 1.05f);
-    plot->yAxis->setLabel("Expense per category\nin " + backend->currencies()->base());
+    ui->categoriesPlotLabel->setText("Expense per category in " + backend->currencies()->base());
 
     plot->replot();
 }
