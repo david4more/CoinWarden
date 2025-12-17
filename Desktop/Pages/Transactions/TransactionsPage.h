@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QComboBox>
 #include <QWidget>
 #include <QDate>
 class Backend;
@@ -7,6 +8,7 @@ class TransactionModel;
 class TransactionProxy;
 class QButtonGroup;
 class QAbstractButton;
+class QComboBox;
 
 namespace Ui { class TransactionsPage; }
 
@@ -26,18 +28,18 @@ signals:
     void customFilters();
 
 private:
-    enum Filter { No, Expense, Income, Category, Custom };
+    enum class Filter { Category, Account, Currency, Custom };
 
     int month, year;
     TransactionModel* model;
     TransactionProxy* proxy;
-    QButtonGroup* filters;
+    QButtonGroup* types;
     Backend* backend;
     Ui::TransactionsPage* ui;
 
+    void onComboFilter(QComboBox* combo, Filter type);
+    void onTypeClicked(int index);
     QPair<QDate, QDate> getDateRange() const;
     void onCustomMonth();
-    void onFilterClicked(int index);
-    void onCategoryFilterButton();
     void onMonthButton(bool next);
 };

@@ -23,25 +23,10 @@ public:
 };
 
 
-
 class BACKEND_EXPORT TransactionProxy : public QSortFilterProxyModel
 {
-    bool enabled = false;
-
-    std::optional<bool> isExpense = std::nullopt;
-    QStringList categories = {}, accounts = {}, currencies = {};
-    float maxAmount = 0.f;
-    QString note = {};
-    QDate from = {}, to = {};
-
-    void resetValues();
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
-
 public:
-    explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) { setSortRole(Qt::UserRole); setFilterRole(Qt::UserRole); }
-
     struct Filters {
-        bool enabled = true;
         std::optional<bool> isExpense;
         std::optional<float> maxAmount;
         std::optional<QStringList> currencies;
@@ -50,5 +35,15 @@ public:
         std::optional<QDate> from, to;
         std::optional<QString> note;
     };
+    explicit TransactionProxy(QObject* parent) : QSortFilterProxyModel(parent) { setSortRole(Qt::UserRole); setFilterRole(Qt::UserRole); }
+
     void useFilters(Filters f);
+    void resetFilters() { filters.reset(); invalidate(); }
+    Filters getFilters() const { if (filters) return *filters; else return {}; }
+
+private:
+    std::optional<Filters> filters;
+
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 };
+

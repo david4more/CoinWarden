@@ -87,21 +87,113 @@
                <height>30</height>
               </size>
              </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>2</number>
+             </property>
              <property name="orientation">
               <enum>Qt::Orientation::Vertical</enum>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QToolButton" name="categoryFilter">
+            <widget class="QComboBox" name="categoryFilter">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
              <property name="styleSheet">
-              <string notr="true">padding: 2px 2px;</string>
+              <string notr="true">QComboBox {
+    background-color: #2d2d2d;
+}
+
+QComboBox:hover {
+    background-color: #3c3c3c;
+}
+
+QComboBox:checked {
+    background-color: #2d2d2d;
+}
+QComboBox:pressed {
+    background-color:  #2d2d2d;
+}
+</string>
              </property>
-             <property name="text">
-              <string>Category</string>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="accountFilter">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="checkable">
-              <bool>true</bool>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QComboBox {
+    background-color: #2d2d2d;
+}
+
+QComboBox:hover {
+    background-color: #3c3c3c;
+}
+
+QComboBox:checked {
+    background-color: #2d2d2d;
+}
+QComboBox:pressed {
+    background-color:  #2d2d2d;
+}
+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="currencyFilter">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QComboBox {
+    background-color: #2d2d2d;
+}
+
+QComboBox:hover {
+    background-color: #3c3c3c;
+}
+
+QComboBox:checked {
+    background-color: #2d2d2d;
+}
+QComboBox:pressed {
+    background-color:  #2d2d2d;
+}
+</string>
              </property>
             </widget>
            </item>
@@ -126,6 +218,19 @@
             <number>0</number>
            </property>
            <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
             <widget class="QToolButton" name="prevMonth">
              <property name="styleSheet">
               <string notr="true">padding: 2px 2px;</string>
@@ -148,7 +253,7 @@
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Policy::Preferred</enum>
+              <enum>QSizePolicy::Policy::Expanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -165,6 +270,12 @@
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>200</width>
+               <height>0</height>
+              </size>
              </property>
              <property name="styleSheet">
               <string notr="true">font: 600 12pt &quot;Sans Serif&quot;;</string>
@@ -183,7 +294,7 @@
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeType">
-              <enum>QSizePolicy::Policy::Preferred</enum>
+              <enum>QSizePolicy::Policy::Expanding</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -209,6 +320,19 @@
               <bool>true</bool>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>

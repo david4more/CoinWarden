@@ -3,81 +3,41 @@
 
 // Transaction proxy methods
 
-void TransactionProxy::resetValues()
-{
-    enabled = false;
-
-    isExpense = -1;
-    categories = {}, accounts = {}, currencies = {};
-    maxAmount = 0.f;
-    note = {};
-    from = {}, to = {};
-}
-
 void TransactionProxy::useFilters(Filters f)
 {
-    if (!f.enabled) {
-        resetValues();
-        invalidate();
-        return;
-    }
-    enabled = true;
-
-    if (f.isExpense) {
-        isExpense = *f.isExpense ? 1 : 0;
-    }
-    if (f.maxAmount) {
-        maxAmount = *f.maxAmount;
-    }
-    if (f.categories) {
-        categories = std::move(*f.categories);
-    }
-    if (f.accounts) {
-        accounts = std::move(*f.accounts);
-    }
-    if (f.currencies) {
-        accounts = std::move(*f.currencies);
-    }
-    if (f.from) {
-        from = *f.from;
-    }
-    if (f.to) {
-        to = *f.to;
-    }
-    if (f.note) {
-        note = *f.note;
-    }
-
+    filters = std::move(f);
     invalidate();
 }
 
 bool TransactionProxy::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if (!enabled) return true;
+    if (!filters) return true;
 
+    auto data = [this, &sourceRow, &sourceParent](int column) { return sourceModel()->index(sourceRow, column, sourceParent).data(filterRole()); };
 
+    if (filters->isExpense || filters->maxAmount) {
+        float amt = data(0).toFloat();
+        if (filters->isExpense && ((amt < 0) != *filters->isExpense)) return false;
+        if (filters->maxAmount && amt > *filters->maxAmount) return false;
+    }
 
-    float amt = sourceModel()->index(sourceRow, 0, sourceParent).data(filterRole()).toFloat();
-    if (isExpense && ((amt < 0) != *isExpense)) return false;
-    if (!qFuzzyIsNull(maxAmount) && amt > maxAmount) return false;
-
-    if (!categories.empty() && !categories.contains(
-        sourceModel()->index(sourceRow, 2, sourceParent).data(filterRole()).toString()))
+    if (filters->categories && !filters->categories->contains(data(2).toString()))
         return false;
 
-    return true;
-    QString acc = sourceModel()->index(sourceRow, 3, sourceParent).data(filterRole()).toString();
-    if (!accounts.empty() && !accounts.contains(acc)) return false;
+    if (filters->accounts && filters->accounts->contains(
+        data(3).toString())) return false;
 
-    QString cur = sourceModel()->index(sourceRow, 5, sourceParent).data(filterRole()).toString();
-    if (!currencies.empty() && !currencies.contains(cur)) return false;
+    if (filters->currencies && filters->currencies->contains(
+        data(5).toString())) return false;
 
-    QDate date  = sourceModel()->index(sourceRow, 1, sourceParent).data(filterRole()).toDate();
-    if (!from.isNull() && date < from) return false;
-    if (!to.isNull() && date > to) return false;
+    if (filters->from || filters->to) {
+        QDate date  = data(1).toDate();
+        if (filters->from && date < filters->from) return false;
+        if (filters->to && date > filters->to) return false;
+    }
 
-    QString note = sourceModel()->index(sourceRow, 4, sourceParent).data(filterRole()).toString();
-    if (!note.isEmpty() && !note.contains(note)) return false;
+    if (filters->note && !filters->note->contains(
+        data(4).toString())) return false;
 
     return true;
 }

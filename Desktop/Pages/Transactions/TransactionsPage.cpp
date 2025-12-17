@@ -1,7 +1,7 @@
 #include "TransactionsPage.h"
 #include "ui_TransactionsPage.h"
 
-#include "../../Backend/Backend.h"
+#include "../../../Backend/Backend.h"
 #include "../../../Backend/Managers/CategoriesManager.h"
 #include "../../../Backend/Managers/TransactionsManager.h"
 #include "../Dialog/MultiSelectDialog.h"
@@ -11,8 +11,12 @@
 #include <QPushButton>
 #include <QButtonGroup>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QSpinBox>
+#include <utility>
+#include "../../../Backend/Modules/Utils.h"
+#include "Managers/CurrenciesManager.h"
 
 class TransactionDelegate : public QStyledItemDelegate
 {
@@ -37,7 +41,6 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     connect(ui->prevMonth, &QToolButton::clicked, this, [&]{ onMonthButton(false); });
     connect(ui->nextMonth, &QToolButton::clicked, this, [&]{ onMonthButton(true); });
     connect(ui->date, &QToolButton::clicked, this, &TransactionsPage::onCustomMonth);
-
     connect(ui->newTransaction, &QPushButton::clicked, this, [this]{ emit newTransaction(); });
 
     ui->transactionsTable->resizeColumnsToContents();
@@ -54,46 +57,90 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     year = QDate::currentDate().year();
     updateData();
 
-    filters = new QButtonGroup(this);
-    filters->setExclusive(true);
-    filters->addButton(ui->noFilter, 0);
-    filters->addButton(ui->expenseFilter, 1);
-    filters->addButton(ui->incomeFilter, 2);
-    filters->addButton(ui->categoryFilter, 3);
-    filters->addButton(ui->customFilter, 4);
+    types = new QButtonGroup(this);
+    types->setExclusive(true);
+    types->addButton(ui->noFilter, 0);
+    types->addButton(ui->expenseFilter, 1);
+    types->addButton(ui->incomeFilter, 2);
+    connect(types, &QButtonGroup::idClicked, this, &TransactionsPage::onTypeClicked);
 
-    connect(filters, &QButtonGroup::idClicked, this, &TransactionsPage::onFilterClicked);
+    auto setupCombo = [this](QComboBox* combo, Filter type, const QStringList& items) {
+        combo->addItem("All");
+        combo->addItem("Multiple...");
+        combo->addItems(items);
+
+        connect(combo, &QComboBox::currentIndexChanged, combo, [combo, this, type] (int index){ onComboFilter(combo, type); });
+    };
+    setupCombo(ui->categoryFilter, Filter::Category, backend->categories()->getNames(CategoryType::All));
+    setupCombo(ui->accountFilter, Filter::Account, {"Cash", "User cat", "Doom slayer", "Mother's savings"} );
+    setupCombo(ui->currencyFilter, Filter::Currency, backend->currencies()->codes());
 }
 
-void TransactionsPage::onFilterClicked(int index)
+void TransactionsPage::onCustomFiltersFinished(int result)
 {
-    switch (index) {
-    case Filter::No:
-        proxy->useFilters({.enabled = false}); break;
-    case Filter::Expense:
-        proxy->useFilters({.isExpense = true }); break;
-    case Filter::Income:
-        proxy->useFilters({.isExpense = false }); break;
-    case Filter::Category:
-        onCategoryFilterButton(); break;
-    case Filter::Custom:
-        emit customFilters(); break;
-    }
-}
-
-void TransactionsPage::onCategoryFilterButton()
-{
-    auto categories = MultiSelectDialog::getSelectedItems(
-        "Choose categories",
-        backend->categories()->getNames(CategoryType::Expense),
-        this);
-
-    if (categories.empty()) {
-        ui->noFilter->click();
+    if (result != QDialog::Accepted) {
+        ui->customFilter->setChecked(false);
         return;
     }
 
-    proxy->useFilters({.categories = categories});
+    ui->categoryFilter->setCurrentIndex(0);
+    ui->accountFilter->setCurrentIndex(0);
+    ui->currencyFilter->setCurrentIndex(0);
+}
+
+void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
+{
+    if (combo->currentIndex() == 0) {
+        auto filters = proxy->getFilters();
+        switch (filter) {
+            case Filter::Category: filters.categories.reset(); break;
+            case Filter::Account: filters.accounts.reset(); break;
+            case Filter::Currency: filters.currencies.reset(); break;
+        }
+        proxy->useFilters(filters);
+        return;
+    }
+
+    QStringList items;
+    if (combo->currentIndex() == 1) {
+        QString title = "Pick ";
+        switch (filter) {
+        case Filter::Category: title += "categories"; break;
+        case Filter::Account: title += "accounts"; break;
+        case Filter::Currency: title += "currencies"; break;
+        }
+
+        items = MultiSelectDialog::getSelectedItems(
+            std::move(title),
+            backend->categories()->getNames(static_cast<CategoryType>(types->checkedId())),
+            this);
+
+        if (items.empty()) { combo->setCurrentIndex(0); return; }
+    }
+    else
+        items += combo->currentText();
+
+    switch (filter) {
+    case Filter::Category:
+        proxy->useFilters({.categories = items}); break;
+    case Filter::Account:
+        proxy->useFilters({.accounts = items}); break;
+    case Filter::Currency:
+        proxy->useFilters({.currencies = items}); break;
+    }
+}
+
+void TransactionsPage::onTypeClicked(int index)
+{
+    CategoryType type = static_cast<CategoryType>(index);
+    switch (type) {
+    case CategoryType::All:
+        proxy->resetFilters(); break;
+    case CategoryType::Expense:
+        proxy->useFilters({.isExpense = true }); break;
+    case CategoryType::Income:
+        proxy->useFilters({.isExpense = false }); break;
+    }
 }
 
 void TransactionsPage::onCustomMonth()
@@ -149,12 +196,6 @@ void TransactionsPage::updateData()
     auto range = getDateRange();
     ui->date->setText(range.first.toString("MMMM yyyy"));
     model->setTransactions(backend->transactions()->get(range.first, range.second));
-}
-
-void TransactionsPage::onCustomFiltersFinished(int result)
-{
-    if (result != QDialog::Accepted)
-    ui->noFilter->click();
 }
 
 QPair<QDate, QDate> TransactionsPage::getDateRange() const
