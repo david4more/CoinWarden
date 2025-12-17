@@ -2,7 +2,7 @@
 #include <QObject>
 #include <QTimer>
 
-enum Page { Home, Transactions, Settings, NewTransaction, CustomFilters };
+enum class Page { Home, Transactions, Settings, NewTransaction, CustomFilters };
 
 
 class Utils : public QObject

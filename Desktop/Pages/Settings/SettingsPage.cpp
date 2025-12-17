@@ -2,11 +2,8 @@
 #include "ui_SettingsPage.h"
 
 #include <QPushButton>
-#include <Backend.h>
 #include <QMessageBox>
 
-#include "../../../Backend/Managers/TransactionsManager.h"
-#include "Managers/CurrenciesManager.h"
 
 SettingsPage::SettingsPage(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::SettingsPage), backend(backend)
@@ -21,8 +18,7 @@ void SettingsPage::onGetCurrencies()
 {
     if (ui->currencies->text().isEmpty() || ui->base->text().isEmpty()) { QMessageBox::information(this, "Error", "Fields are empty"); return; }
 
-    backend->currencies()->requestLatest("EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY", "EUR");
-    emit updateData();
+    emit requestCurrencies("EUR,GBP,CHF,PLN,UAH,USD,CAD,JPY,CNY", "EUR");
 }
 
 void SettingsPage::onResetTransactions()
@@ -32,8 +28,7 @@ void SettingsPage::onResetTransactions()
         QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::No)
         return;
 
-    this->backend->generateTransactions();
-    emit updateUI();
+    emit generateTransactions();
 }
 
 SettingsPage::~SettingsPage()

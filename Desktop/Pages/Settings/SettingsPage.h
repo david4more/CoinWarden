@@ -14,8 +14,8 @@ public:
     ~SettingsPage() override;
 
 signals:
-    void updateUI();
-    void updateData();
+    void generateTransactions();
+    void requestCurrencies(QString currencies, QString base);
 
 private:
     Backend* backend;

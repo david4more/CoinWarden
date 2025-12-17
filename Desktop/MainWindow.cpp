@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupUI()
 {
+    // initialize backend and model+proxy
     backend = new Backend(this);
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
     backend->initialize();
@@ -32,27 +33,32 @@ void MainWindow::setupUI()
     model = new TransactionModel(this, backend->currencies()->rates(), backend->currencies()->symbols());
     proxy = new TransactionProxy(this);
 
+    // group MainWindow's buttons
+    pages = new QButtonGroup(this);
+    pages->addButton(ui->home);
+    pages->addButton(ui->transactions);
+    pages->addButton(ui->settings);
+    pages->setExclusive(true);
+
+    // initialize pages and connect signals to change the current one
     ui->pages->addWidget(homePage = new HomePage(backend, ui->pages));
     ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, model, proxy, ui->pages));
     ui->pages->addWidget(settingsPage = new SettingsPage(backend, ui->pages));
     ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
-
     connect(ui->home, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
     connect(ui->transactions, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
     connect(ui->settings, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
     connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
     connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
 
+    // connect pages' functionality
     connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
-        { updateUI(); changePage(Page::Transactions); } );
-    connect(settingsPage, &SettingsPage::updateUI, this, [this](){ updateUI(); });
-    connect(settingsPage, &SettingsPage::updateData, transactionsPage, &TransactionsPage::updateData);
+        { updateUI(); changePage(Page::Transactions); });
+    connect(settingsPage, &SettingsPage::generateTransactions, this, [this]()
+        { backend->generateTransactions(); updateUI(); });
+    connect(settingsPage, &SettingsPage::requestCurrencies, this, [this](QString currencies, QString base)
+        { backend->currencies()->requestLatest(currencies, base); transactionsPage->updateData(); });
 
-    pages = new QButtonGroup(this);
-    pages->addButton(ui->home);
-    pages->addButton(ui->transactions);
-    pages->addButton(ui->settings);
-    pages->setExclusive(true);
 
     changePage(Page::Home);
 }
@@ -80,7 +86,7 @@ void MainWindow::changePage(Page p)
     }
     }
 
-    ui->pages->setCurrentIndex(p);
+    ui->pages->setCurrentIndex(static_cast<int>(p));
 }
 
 void MainWindow::onFirstLaunch()
