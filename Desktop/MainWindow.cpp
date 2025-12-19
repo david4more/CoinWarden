@@ -50,21 +50,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->settings, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
 
     // connect pages' functionality
-    setupTransactionsPage();
+    setupTransactionsPageAndForm();
     setupSettingsPage();
 
     refresh();
     changePage(Page::Home);
 }
 
-void MainWindow::setupTransactionsPage()
+void MainWindow::setupTransactionsPageAndForm()
 {
     ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
     connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
     connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
-
-    connect(newTransactionForm, &NewTransactionForm::done, this, [this]
-        { refresh(); changePage(Page::Transactions); });
 
     connect(transactionsPage, &TransactionsPage::updateTransactions, this, [this] (QPair<QDate, QDate> range)
         { model->setTransactions(backend->transactions()->get(range.first, range.second)); });
@@ -76,12 +73,29 @@ void MainWindow::setupTransactionsPage()
         backend->currencies()->codes());
     });
 
+
+    connect(newTransactionForm, &NewTransactionForm::addTransaction, this, [this](Transaction t, bool isExpense){
+        t.category = backend->categories()->findId(t.categoryName, isExpense);
+        if (!t) return;
+        backend->transactions()->add(t);
+        refresh();
+        changePage(Page::Transactions);
+    });
+    connect(newTransactionForm, &NewTransactionForm::goBack, this, [this] { changePage(Page::Transactions);} );
+    connect(newTransactionForm, &NewTransactionForm::requestFilters, this, [this] {
+        newTransactionForm->setFilters(
+            backend->categories()->getNames(TransactionType::Expense),
+            backend->categories()->getNames(TransactionType::Income),
+            { "User cat. Noone else is needed", "Maybe a User Spider" },
+            backend->currencies()->codes());
+    });
 }
 
 void MainWindow::refresh()
 {
-    transactionsPage->refresh();
     homePage->refresh();
+    transactionsPage->refresh();
+    newTransactionForm->refresh();
 }
 
 void MainWindow::setupSettingsPage()

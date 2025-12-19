@@ -41,7 +41,6 @@ private:
     Backend* backend;
     Ui::TransactionsPage* ui;
 
-    void updateFilters();
     QPair<QDate, QDate> getDateRange() const;
     void onComboFilter(QComboBox* combo, Filter type);
     void onTypeClicked(int index);

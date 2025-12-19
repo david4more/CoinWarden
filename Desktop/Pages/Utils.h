@@ -10,7 +10,7 @@ class Utils : public QObject
     Q_OBJECT
 
 public:
-    static void highlightField(QWidget* widget, bool condition = false)
+    static void highlightField(QWidget* widget, bool condition = true)
     {
         if (!condition) return;
 

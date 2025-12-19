@@ -65,12 +65,13 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     auto connectCombo = [this](MyComboBox* combo, Filter type) {
         connect(combo, &QComboBox::activated, this, [type, combo, this] (int index)
             { onComboFilter(combo, type); });
-        connect(combo, &MyComboBox::aboutToShowPopup, this, [type, this]
-            { if (type != Filter::Currency && types->checkedId() == 0) types->button(1)->click(); });
     };
     connectCombo(ui->categoryFilter, Filter::Category);
     connectCombo(ui->accountFilter, Filter::Account);
     connectCombo(ui->currencyFilter, Filter::Currency);
+
+    connect(ui->categoryFilter, &MyComboBox::aboutToShowPopup, this, [this]
+        { if (types->checkedId() == 0) types->button(1)->click(); });
 }
 
 void TransactionsPage::refresh()
@@ -78,7 +79,7 @@ void TransactionsPage::refresh()
     auto range = getDateRange();
     ui->date->setText(range.first.toString("MMMM yyyy"));
     emit updateTransactions(range);
-    updateFilters();
+    emit requestFilters(type);
 }
 
 void TransactionsPage::setFilters(QStringList categories, QStringList accounts, QStringList currencies)
@@ -87,20 +88,15 @@ void TransactionsPage::setFilters(QStringList categories, QStringList accounts, 
     this->accounts = std::move(accounts);
     this->currencies = std::move(currencies);
 
-    updateFilters();
-}
-
-void TransactionsPage::updateFilters()
-{
     auto updateCombo = [this](QComboBox* combo, const QStringList& items) {
         combo->clear();
         combo->addItem("All");
         combo->addItem("Multiple...");
         combo->addItems(items);
     };
-    updateCombo(ui->categoryFilter, categories);
-    updateCombo(ui->accountFilter, accounts);
-    updateCombo(ui->currencyFilter, currencies);
+    updateCombo(ui->categoryFilter, this->categories);
+    updateCombo(ui->accountFilter, this->accounts);
+    updateCombo(ui->currencyFilter, this->currencies);
 }
 
 void TransactionsPage::onCustomFiltersFinished(int result)
@@ -174,6 +170,8 @@ void TransactionsPage::onTypeClicked(int index)
 
     if (type != TransactionType::All)
         emit requestFilters(type);
+    else
+        ui->categoryFilter->setCurrentIndex(0);
 }
 
 void TransactionsPage::onCustomMonth()

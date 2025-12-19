@@ -2,18 +2,16 @@
 #include "ui_NewTransactionForm.h"
 
 #include "../../Backend/Modules/Transaction.h"
-#include "../../../Backend/Managers/TransactionsManager.h"
-#include "../../../Backend/Managers/CurrenciesManager.h"
-#include "../../../Backend/Managers/AccountsManager.h"
-#include "../../../Backend/Managers/CategoriesManager.h"
-#include "../../Backend/Backend.h"
+#include "../Utils.h"
+
 #include <QButtonGroup>
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "../Utils.h"
+#include "Utils.h"
 
 NewTransactionForm::~NewTransactionForm() { delete ui; }
+
 NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
     QWidget(parent), ui(new Ui::NewTransactionForm), backend(backend)
 {
@@ -22,25 +20,30 @@ NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
     connect(ui->add, &QToolButton::clicked, this, &NewTransactionForm::onAddTransaction);
     connect(ui->reset, &QToolButton::clicked, this, [this]
         { if (QMessageBox::question(this, "Confirmation", "Are you sure you want to clear the form?") == QMessageBox::Yes) clearForm(); });
-    connect(ui->back, &QToolButton::clicked, this, [this]{ emit done(); });
+    connect(ui->back, &QToolButton::clicked, this, [this]{ emit goBack(); });
 
     auto* group = new QButtonGroup(this);
     group->setExclusive(true);
-    group->addButton(ui->expense);
-    group->addButton(ui->income);
+    group->addButton(ui->expense, 1);
+    group->addButton(ui->income, 2);
 
-    updateData();
+    connect(group, &QButtonGroup::idClicked, this, &NewTransactionForm::updateFilters);
 }
 
-void NewTransactionForm::updateData()
+void NewTransactionForm::refresh()
 {
-    auto updateCombo = [&](QComboBox* box, QStringList list) {
-        box->clear();
-        for (const auto& x : list) box->addItem(x);
-    };
-    updateCombo(ui->currency, backend->currencies()->codes());
-    updateCombo(ui->account, backend->accounts()->names());
-    updateCombo(ui->category, backend->categories()->getNames(TransactionType::Expense));
+    emit requestFilters();
+    updateFilters();
+}
+
+void NewTransactionForm::setFilters(QStringList eCategories, QStringList iCategories, QStringList accounts, QStringList currencies)
+{
+    this->eCategories = std::move(eCategories);
+    this->iCategories = std::move(iCategories);
+    this->accounts = std::move(accounts);
+    this->currencies = std::move(currencies);
+
+    updateFilters();
 }
 
 void NewTransactionForm::clearForm()
@@ -55,19 +58,27 @@ void NewTransactionForm::clearForm()
 
 void NewTransactionForm::onAddTransaction()
 {
+    if (ui->amount->value() == 0.f)
+        Utils::highlightField(ui->amount);
+
     Transaction t;
     t.amount = (ui->income->isChecked()) ? ui->amount->value() : -ui->amount->value();
     t.currency = ui->currency->currentText();
     t.dateTime = QDateTime(ui->dateTime->dateTime());
-    t.category = backend->categories()->findId(ui->category->currentText(), ui->expense->isChecked());
+    t.categoryName = ui->category->currentText();
     t.account = ui->account->currentText();
     t.note = ui->note->text();
 
-    if (!t) {
-        Utils::highlightField(ui->amount, ui->amount->value() == 0.f);
-        return;
-    }
+    emit addTransaction(std::move(t), ui->expense->isChecked());
+}
 
-    backend->transactions()->add(std::move(t));
-    emit done();
+void NewTransactionForm::updateFilters(int index)
+{
+    auto updateCombo = [&](QComboBox* box, const QStringList& list) {
+        box->clear();
+        for (const auto& x : list) box->addItem(x);
+    };
+    updateCombo(ui->category, ui->expense->isChecked() ? eCategories : iCategories);
+    updateCombo(ui->account, accounts);
+    updateCombo(ui->currency, currencies);
 }

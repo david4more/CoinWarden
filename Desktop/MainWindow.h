@@ -39,7 +39,7 @@ private:
     void onFirstLaunch();
     void changePage(Page p);
 
-    void setupTransactionsPage();
+    void setupTransactionsPageAndForm();
     void setupSettingsPage();
 };
 

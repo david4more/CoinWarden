@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include "Transaction.h"
 class Backend;
 
 namespace Ui { class NewTransactionForm; }
@@ -13,15 +14,20 @@ public:
     explicit NewTransactionForm(Backend* backend, QWidget* parent = nullptr);
     ~NewTransactionForm() override;
 
+    void refresh();
     void clearForm();
+    void setFilters(QStringList eCategories, QStringList iCategories, QStringList accounts, QStringList currencies);
 
 signals:
-    void done();
+    void goBack();
+    void addTransaction(Transaction t, bool isExpense);
+    void requestFilters();
 
 private:
-    void onAddTransaction();
-    void updateData();
-
+    QStringList eCategories, iCategories, accounts, currencies;
     Backend* backend;
     Ui::NewTransactionForm* ui;
+
+    void onAddTransaction();
+    void updateFilters(int index = -1);
 };
