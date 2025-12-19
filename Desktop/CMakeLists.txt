@@ -21,6 +21,7 @@ set(DESKTOP_HEADERS
     Pages/NewTransaction/NewTransactionForm.h
     Pages/CustomFilters/CustomFiltersForm.h
     Dialog/MultiSelectDialog.h
+        Pages/Transactions/MyComboBox.h
 )
 
 set(DESKTOP_FORMS

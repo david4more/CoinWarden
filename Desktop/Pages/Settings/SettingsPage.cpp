@@ -5,8 +5,8 @@
 #include <QMessageBox>
 
 
-SettingsPage::SettingsPage(Backend* backend, QWidget* parent) :
-    QWidget(parent), ui(new Ui::SettingsPage), backend(backend)
+SettingsPage::SettingsPage(QWidget* parent) :
+    QWidget(parent), ui(new Ui::SettingsPage)
 {
     ui->setupUi(this);
 

@@ -35,10 +35,12 @@ private:
     TransactionModel* model;
     TransactionProxy* proxy;
 
-    void setupUI();
-    void updateUI();
+    void refresh();
     void onFirstLaunch();
     void changePage(Page p);
+
+    void setupTransactionsPage();
+    void setupSettingsPage();
 };
 
 

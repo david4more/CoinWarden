@@ -14,7 +14,7 @@ class HomePage : public QWidget
 public:
     explicit HomePage(Backend* backend, QWidget* parent = nullptr);
     ~HomePage() override;
-    void updateData();
+    void refresh();
 
 private:
     void updateFinancesData();

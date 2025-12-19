@@ -99,7 +99,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="categoryFilter">
+            <widget class="MyComboBox" name="categoryFilter">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -132,7 +132,7 @@ QComboBox:pressed {
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="accountFilter">
+            <widget class="MyComboBox" name="accountFilter">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -165,7 +165,7 @@ QComboBox:pressed {
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="currencyFilter">
+            <widget class="MyComboBox" name="currencyFilter">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -371,6 +371,13 @@ font: 500 11pt &quot;Segoe UI&quot;;</string>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyComboBox</class>
+   <extends>QComboBox</extends>
+   <header>MyComboBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../../Files/files.qrc"/>
  </resources>

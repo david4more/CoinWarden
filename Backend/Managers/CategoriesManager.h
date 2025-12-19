@@ -14,8 +14,10 @@ class BACKEND_EXPORT CategoriesManager
     QSqlDatabase& db;
     static const QString defaultColor;
 
-public:
+signals:
+    void categoriesUpdated();
 
+public:
     QMap<QString, double> getLimits() const;
     int findId(QString name, bool isExpense = true) const;
     explicit CategoriesManager(QSqlDatabase& db) : db(db) {}

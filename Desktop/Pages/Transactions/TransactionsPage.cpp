@@ -1,11 +1,10 @@
 #include "TransactionsPage.h"
 #include "ui_TransactionsPage.h"
 
-#include "../../../Backend/Backend.h"
-#include "../../../Backend/Managers/CategoriesManager.h"
-#include "../../../Backend/Managers/TransactionsManager.h"
 #include "../Dialog/MultiSelectDialog.h"
 #include "../../../Backend/Modules/Model.h"
+#include "../../../Backend/Modules/Utils.h"
+
 #include <QStyledItemDelegate>
 #include <QCheckBox>
 #include <QPushButton>
@@ -14,9 +13,6 @@
 #include <QLineEdit>
 #include <QMessageBox>
 #include <QSpinBox>
-#include <utility>
-#include "../../../Backend/Modules/Utils.h"
-#include "Managers/CurrenciesManager.h"
 
 class TransactionDelegate : public QStyledItemDelegate
 {
@@ -24,8 +20,8 @@ public:
     explicit TransactionDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent) {}
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override {
         QStyleOptionViewItem opt(option);
-        opt.state &= ~QStyle::State_MouseOver;
 
+        opt.state &= ~QStyle::State_MouseOver;
         opt.font.setFamily("Cascadia Mono");
 
         QStyledItemDelegate::paint(painter, opt, index);
@@ -33,6 +29,7 @@ public:
 };
 
 TransactionsPage::~TransactionsPage() { delete ui; }
+
 TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy, QWidget* parent) :
     QWidget(parent), ui(new Ui::TransactionsPage), backend(backend), model(model), proxy(proxy)
 {
@@ -42,6 +39,7 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     connect(ui->nextMonth, &QToolButton::clicked, this, [&]{ onMonthButton(true); });
     connect(ui->date, &QToolButton::clicked, this, &TransactionsPage::onCustomMonth);
     connect(ui->newTransaction, &QPushButton::clicked, this, [this]{ emit newTransaction(); });
+    connect(ui->customFilter, &QPushButton::clicked, this, [this]{ emit customFilters(); });
 
     ui->transactionsTable->resizeColumnsToContents();
     ui->transactionsTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -50,12 +48,14 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     ui->transactionsTable->setSortingEnabled(true);
     ui->transactionsTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->transactionsTable->setItemDelegate(new TransactionDelegate(this));
+    ui->transactionsTable->setColumnHidden(5, true);
 
     proxy->setSourceModel(model);
     ui->transactionsTable->setModel(proxy);
     month = QDate::currentDate().month();
     year = QDate::currentDate().year();
-    updateData();
+    auto range = getDateRange();
+    emit updateTransactions(range.first, range.second);
 
     types = new QButtonGroup(this);
     types->setExclusive(true);
@@ -64,16 +64,46 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     types->addButton(ui->incomeFilter, 2);
     connect(types, &QButtonGroup::idClicked, this, &TransactionsPage::onTypeClicked);
 
-    auto setupCombo = [this](QComboBox* combo, Filter type, const QStringList& items) {
+    auto connectCombo = [this](MyComboBox* combo, Filter type) {
+        connect(combo, &QComboBox::activated, this, [type, combo, this] (int index)
+            { onComboFilter(combo, type); });
+        connect(combo, &MyComboBox::aboutToShowPopup, this, [type, this]
+            { if (type != Filter::Currency && types->checkedId() == 0) types->button(1)->click(); });
+    };
+    connectCombo(ui->categoryFilter, Filter::Category);
+    connectCombo(ui->accountFilter, Filter::Account);
+    connectCombo(ui->currencyFilter, Filter::Currency);
+}
+
+void TransactionsPage::refresh()
+{
+    auto range = getDateRange();
+    ui->date->setText(range.first.toString("MMMM yyyy"));
+    emit updateTransactions(range.first, range.second);
+}
+
+void TransactionsPage::setFilters(QStringList expenseCategories, QStringList incomeCategories, QStringList accounts, QStringList currencies)
+{
+    this->expenseCategories = std::move(expenseCategories);
+    this->incomeCategories = std::move(incomeCategories);
+    this->accounts = std::move(accounts);
+    this->currencies = std::move(currencies);
+
+    updateFilters();
+
+}
+
+void TransactionsPage::updateFilters()
+{
+    auto setupCombo = [this](QComboBox* combo, const QStringList& items) {
+        combo->clear();
         combo->addItem("All");
         combo->addItem("Multiple...");
         combo->addItems(items);
-
-        connect(combo, &QComboBox::currentIndexChanged, combo, [combo, this, type] (int index){ onComboFilter(combo, type); });
     };
-    setupCombo(ui->categoryFilter, Filter::Category, backend->categories()->getNames(CategoryType::All));
-    setupCombo(ui->accountFilter, Filter::Account, {"Cash", "User cat", "Doom slayer", "Mother's savings"} );
-    setupCombo(ui->currencyFilter, Filter::Currency, backend->currencies()->codes());
+    setupCombo(ui->categoryFilter, getCategories());
+    setupCombo(ui->accountFilter, this->accounts);
+    setupCombo(ui->currencyFilter, this->currencies);
 }
 
 void TransactionsPage::onCustomFiltersFinished(int result)
@@ -101,20 +131,19 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
         return;
     }
 
-    if (types->checkedId() == 0) types->button(1)->setChecked(true);
-
     QStringList items;
     if (combo->currentIndex() == 1) {
         QString title = "Pick ";
+        QStringList list;
         switch (filter) {
-        case Filter::Category: title += "categories"; break;
-        case Filter::Account: title += "accounts"; break;
-        case Filter::Currency: title += "currencies"; break;
+        case Filter::Category: list = getCategories(); title += "categories"; break;
+        case Filter::Account: list = accounts; title += "accounts"; break;
+        case Filter::Currency: list = currencies; title += "currencies"; break;
         }
 
         items = MultiSelectDialog::getSelectedItems(
             std::move(title),
-            backend->categories()->getNames(static_cast<CategoryType>(types->checkedId())),
+            list,
             this);
 
         if (items.empty()) { combo->setCurrentIndex(0); return; }
@@ -122,7 +151,7 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
     else
         items += combo->currentText();
 
-    TransactionProxy::Filters filters;
+    TransactionProxy::Filters filters = proxy->getFilters();
     filters.isExpense = types->checkedId() == 1;
 
     switch (filter) {
@@ -136,6 +165,7 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
 void TransactionsPage::onTypeClicked(int index)
 {
     CategoryType type = static_cast<CategoryType>(index);
+
     switch (type) {
     case CategoryType::All:
         proxy->resetFilters(); break;
@@ -144,6 +174,7 @@ void TransactionsPage::onTypeClicked(int index)
     case CategoryType::Income:
         proxy->useFilters({ .isExpense = false }); break;
     }
+    updateFilters();
 }
 
 void TransactionsPage::onCustomMonth()
@@ -174,7 +205,7 @@ void TransactionsPage::onCustomMonth()
     connect(button, &QPushButton::clicked, dialog, [dialog, month, year, this] {
         this->month = month->value(); this->year = year->value();
 
-        updateData(); dialog->accept();
+        refresh(); dialog->accept();
     });
 
     dialog->adjustSize();
@@ -191,14 +222,17 @@ void TransactionsPage::onMonthButton(bool next)
         else month--;
     }
 
-    updateData();
+    refresh();
 }
 
-void TransactionsPage::updateData()
+QStringList TransactionsPage::getCategories()
 {
-    auto range = getDateRange();
-    ui->date->setText(range.first.toString("MMMM yyyy"));
-    model->setTransactions(backend->transactions()->get(range.first, range.second));
+    switch (static_cast<CategoryType>(types->checkedId())) {
+    case CategoryType::All: return expenseCategories + incomeCategories;
+    case CategoryType::Expense: return expenseCategories;
+    case CategoryType::Income: return incomeCategories;
+    default: return {};
+    }
 }
 
 QPair<QDate, QDate> TransactionsPage::getDateRange() const

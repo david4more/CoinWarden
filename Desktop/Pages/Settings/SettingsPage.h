@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QWidget>
-class Backend;
 
 namespace Ui { class SettingsPage; }
 
@@ -10,7 +9,7 @@ class SettingsPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit SettingsPage(Backend* backend, QWidget* parent = nullptr);
+    explicit SettingsPage(QWidget* parent = nullptr);
     ~SettingsPage() override;
 
 signals:
@@ -18,7 +17,6 @@ signals:
     void requestCurrencies(QString currencies, QString base);
 
 private:
-    Backend* backend;
     Ui::SettingsPage* ui;
 
     void onResetTransactions();

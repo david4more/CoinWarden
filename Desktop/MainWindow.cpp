@@ -2,17 +2,21 @@
 #include "ui_mainwindow.h"
 
 #include "../Backend/Backend.h"
+#include "Managers/CurrenciesManager.h"
+#include "Managers/CategoriesManager.h"
+#include "Managers/TransactionsManager.h"
+#include "Managers/AccountsManager.h"
+#include "Modules/Model.h"
+
 #include "Pages/Home/HomePage.h"
 #include "Pages/Transactions/TransactionsPage.h"
 #include "Pages/Settings/SettingsPage.h"
 #include "Pages/NewTransaction/NewTransactionForm.h"
 #include "Pages/CustomFilters/CustomFiltersForm.h"
 
-#include "Managers/CurrenciesManager.h"
-#include "../Backend/Modules/Model.h"
-
 #include <QButtonGroup>
 #include <QMessageBox>
+
 
 MainWindow::~MainWindow() { delete ui; }
 MainWindow::MainWindow(QWidget *parent)
@@ -20,11 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setupUI();
-}
 
-void MainWindow::setupUI()
-{
     // initialize backend and model+proxy
     backend = new Backend(this);
     connect(backend, &Backend::firstLaunch, this, &MainWindow::onFirstLaunch);
@@ -43,30 +43,50 @@ void MainWindow::setupUI()
     // initialize pages and connect signals to change the current one
     ui->pages->addWidget(homePage = new HomePage(backend, ui->pages));
     ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, model, proxy, ui->pages));
-    ui->pages->addWidget(settingsPage = new SettingsPage(backend, ui->pages));
-    ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
+    ui->pages->addWidget(settingsPage = new SettingsPage(ui->pages));
     connect(ui->home, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
     connect(ui->transactions, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
     connect(ui->settings, &QToolButton::clicked, this, [this]{ changePage(Page::Settings); });
-    connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
-    connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
 
     // connect pages' functionality
-    connect(newTransactionForm, &NewTransactionForm::done, this, [this]()
-        { updateUI(); changePage(Page::Transactions); });
-    connect(settingsPage, &SettingsPage::generateTransactions, this, [this]()
-        { backend->generateTransactions(); updateUI(); });
-    connect(settingsPage, &SettingsPage::requestCurrencies, this, [this](QString currencies, QString base)
-        { backend->currencies()->requestLatest(currencies, base); transactionsPage->updateData(); });
+    setupTransactionsPage();
+    setupSettingsPage();
 
-
+    refresh();
     changePage(Page::Home);
 }
 
-void MainWindow::updateUI()
+void MainWindow::setupTransactionsPage()
 {
-    transactionsPage->updateData();
-    homePage->updateData();
+    ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
+    connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
+    connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
+
+    connect(newTransactionForm, &NewTransactionForm::done, this, [this]
+        { refresh(); changePage(Page::Transactions); });
+
+    connect(transactionsPage, &TransactionsPage::updateTransactions, this, [this] (QDate from, QDate to)
+        { model->setTransactions(backend->transactions()->get(from, to)); });
+
+    transactionsPage->setFilters(
+        backend->categories()->getNames(CategoryType::Expense),
+        backend->categories()->getNames(CategoryType::Income),
+        {"Cash", "User cat", "Doom slayer", "Mother's savings" },
+        backend->currencies()->codes());
+}
+
+void MainWindow::refresh()
+{
+    transactionsPage->refresh();
+    homePage->refresh();
+}
+
+void MainWindow::setupSettingsPage()
+{
+    connect(settingsPage, &SettingsPage::generateTransactions, this, [this]
+        { backend->generateTransactions(); refresh(); });
+    connect(settingsPage, &SettingsPage::requestCurrencies, this, [this](QString currencies, QString base)
+        { backend->currencies()->requestLatest(std::move(currencies), std::move(base)); refresh(); });
 }
 
 void MainWindow::changePage(Page p)

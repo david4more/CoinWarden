@@ -17,7 +17,7 @@ public:
 
     void setTransactions(QVector<Transaction>&& t);
     int rowCount(const QModelIndex&) const override { return transactions.size(); }
-    int columnCount(const QModelIndex&) const override { return 5; }
+    int columnCount(const QModelIndex&) const override { return 6; }
     QVariant data(const QModelIndex& index, int role) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 };

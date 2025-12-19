@@ -10,7 +10,7 @@
 
 HomePage::~HomePage() { delete ui; }
 
-void HomePage::updateData()
+void HomePage::refresh()
 {
     updateFinancesData();
     updateCategoriesData();
@@ -22,10 +22,9 @@ HomePage::HomePage(Backend* backend, QWidget* parent) :
     ui->setupUi(this);
 
     setupFinancesPlot();
-    updateFinancesData();
-
     setupCategoriesPlot();
-    updateCategoriesData();
+
+    refresh();
 }
 
 void HomePage::setupCategoriesPlot()
