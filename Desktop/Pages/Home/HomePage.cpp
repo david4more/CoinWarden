@@ -62,7 +62,7 @@ void HomePage::updateCategoriesData()
     QVector<double> ticks;
     QVector<double> values, limits;
     QVector<QString> labels;
-    auto data = backend->transactions()->transactionsPerCategory(QDate::currentDate().addMonths(-1),QDate::currentDate(), CategoryType::Expense);
+    auto data = backend->transactions()->transactionsPerCategory(QDate::currentDate().addMonths(-1),QDate::currentDate(), TransactionType::Expense);
     if (data.size() == 0) return;
 
     auto limitsData = backend->categories()->getLimits();

@@ -15,7 +15,7 @@ public:
     TransactionsManager(QSqlDatabase& db) : db(db) {}
 
     QVector<Transaction> get(const QDate& from, const QDate& to) const;
-    QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type = CategoryType::All) const;
+    QVector<QPair<QString, double>> transactionsPerCategory(const QDate& from, const QDate& to, TransactionType type = TransactionType::All) const;
     QVector<DailyTransactions> transactionsPerDay(const QDate& from, const QDate& to) const;
     bool add(const Transaction& t);
 };

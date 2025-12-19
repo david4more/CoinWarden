@@ -59,7 +59,7 @@ QVector<DailyTransactions> TransactionsManager::transactionsPerDay(const QDate& 
     return dailyData;
 }
 
-QVector<QPair<QString, double>> TransactionsManager::transactionsPerCategory(const QDate& from, const QDate& to, CategoryType type) const
+QVector<QPair<QString, double>> TransactionsManager::transactionsPerCategory(const QDate& from, const QDate& to, TransactionType type) const
 {
     QSqlQuery query(db);
 
@@ -74,11 +74,11 @@ QVector<QPair<QString, double>> TransactionsManager::transactionsPerCategory(con
     QString groupOrderBy = " GROUP BY c.name ORDER BY amount ";
     switch (type)
     {
-    case CategoryType::Expense:
+    case TransactionType::Expense:
         sql += " WHERE c.isExpense = 1 " + groupOrderBy + "ASC;"; break;
-    case CategoryType::Income:
+    case TransactionType::Income:
         sql += " WHERE c.isExpense = 0 " + groupOrderBy + "DESC;"; break;
-    case CategoryType::All:
+    case TransactionType::All:
         sql += groupOrderBy + "DESC;"; break;
     }
 

@@ -45,16 +45,17 @@ bool CategoriesManager::init()
     return true;
 }
 
-QStringList CategoriesManager::getNames(CategoryType type) const
+QStringList CategoriesManager::getNames(TransactionType type) const
 {
     QSqlQuery query(db);
 
     QString q = "SELECT name FROM categories";
     switch (type) {
-    case CategoryType::Expense:
+    case TransactionType::Expense:
         q += " WHERE isExpense = 1"; break;
-    case CategoryType::Income:
+    case TransactionType::Income:
         q += " WHERE isExpense = 0"; break;
+        default: break;
     }
 
     query.prepare(q);

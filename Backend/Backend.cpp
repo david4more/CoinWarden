@@ -78,8 +78,8 @@ bool Backend::generateTransactions()
 
     QVector<QString> currencies = _currencies->codes();
 
-    QVector<QString> expenseCategories = _categories->getNames(CategoryType::Expense);
-    QVector<QString> incomeCategories = _categories->getNames(CategoryType::Income);
+    QVector<QString> expenseCategories = _categories->getNames(TransactionType::Expense);
+    QVector<QString> incomeCategories = _categories->getNames(TransactionType::Income);
 
     //QVector<int> budgets;
     //query.exec("select id from budgets");

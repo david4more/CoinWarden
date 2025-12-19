@@ -48,14 +48,12 @@ TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, Tr
     ui->transactionsTable->setSortingEnabled(true);
     ui->transactionsTable->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->transactionsTable->setItemDelegate(new TransactionDelegate(this));
+    ui->transactionsTable->setModel(proxy);
     ui->transactionsTable->setColumnHidden(5, true);
 
-    proxy->setSourceModel(model);
-    ui->transactionsTable->setModel(proxy);
     month = QDate::currentDate().month();
     year = QDate::currentDate().year();
-    auto range = getDateRange();
-    emit updateTransactions(range.first, range.second);
+    emit updateTransactions(getDateRange());
 
     types = new QButtonGroup(this);
     types->setExclusive(true);
@@ -79,31 +77,30 @@ void TransactionsPage::refresh()
 {
     auto range = getDateRange();
     ui->date->setText(range.first.toString("MMMM yyyy"));
-    emit updateTransactions(range.first, range.second);
+    emit updateTransactions(range);
+    updateFilters();
 }
 
-void TransactionsPage::setFilters(QStringList expenseCategories, QStringList incomeCategories, QStringList accounts, QStringList currencies)
+void TransactionsPage::setFilters(QStringList categories, QStringList accounts, QStringList currencies)
 {
-    this->expenseCategories = std::move(expenseCategories);
-    this->incomeCategories = std::move(incomeCategories);
+    this->categories = std::move(categories);
     this->accounts = std::move(accounts);
     this->currencies = std::move(currencies);
 
     updateFilters();
-
 }
 
 void TransactionsPage::updateFilters()
 {
-    auto setupCombo = [this](QComboBox* combo, const QStringList& items) {
+    auto updateCombo = [this](QComboBox* combo, const QStringList& items) {
         combo->clear();
         combo->addItem("All");
         combo->addItem("Multiple...");
         combo->addItems(items);
     };
-    setupCombo(ui->categoryFilter, getCategories());
-    setupCombo(ui->accountFilter, this->accounts);
-    setupCombo(ui->currencyFilter, this->currencies);
+    updateCombo(ui->categoryFilter, categories);
+    updateCombo(ui->accountFilter, accounts);
+    updateCombo(ui->currencyFilter, currencies);
 }
 
 void TransactionsPage::onCustomFiltersFinished(int result)
@@ -136,7 +133,7 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
         QString title = "Pick ";
         QStringList list;
         switch (filter) {
-        case Filter::Category: list = getCategories(); title += "categories"; break;
+        case Filter::Category: list = categories; title += "categories"; break;
         case Filter::Account: list = accounts; title += "accounts"; break;
         case Filter::Currency: list = currencies; title += "currencies"; break;
         }
@@ -164,17 +161,19 @@ void TransactionsPage::onComboFilter(QComboBox* combo, Filter filter)
 
 void TransactionsPage::onTypeClicked(int index)
 {
-    CategoryType type = static_cast<CategoryType>(index);
+    type = static_cast<TransactionType>(index);
 
     switch (type) {
-    case CategoryType::All:
+    case TransactionType::All:
         proxy->resetFilters(); break;
-    case CategoryType::Expense:
+    case TransactionType::Expense:
         proxy->useFilters({ .isExpense = true }); break;
-    case CategoryType::Income:
+    case TransactionType::Income:
         proxy->useFilters({ .isExpense = false }); break;
     }
-    updateFilters();
+
+    if (type != TransactionType::All)
+        emit requestFilters(type);
 }
 
 void TransactionsPage::onCustomMonth()
@@ -205,7 +204,7 @@ void TransactionsPage::onCustomMonth()
     connect(button, &QPushButton::clicked, dialog, [dialog, month, year, this] {
         this->month = month->value(); this->year = year->value();
 
-        refresh(); dialog->accept();
+        emit updateTransactions(getDateRange()); dialog->accept();
     });
 
     dialog->adjustSize();
@@ -223,16 +222,6 @@ void TransactionsPage::onMonthButton(bool next)
     }
 
     refresh();
-}
-
-QStringList TransactionsPage::getCategories()
-{
-    switch (static_cast<CategoryType>(types->checkedId())) {
-    case CategoryType::All: return expenseCategories + incomeCategories;
-    case CategoryType::Expense: return expenseCategories;
-    case CategoryType::Income: return incomeCategories;
-    default: return {};
-    }
 }
 
 QPair<QDate, QDate> TransactionsPage::getDateRange() const

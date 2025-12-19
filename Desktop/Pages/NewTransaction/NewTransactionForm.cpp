@@ -40,7 +40,7 @@ void NewTransactionForm::updateData()
     };
     updateCombo(ui->currency, backend->currencies()->codes());
     updateCombo(ui->account, backend->accounts()->names());
-    updateCombo(ui->category, backend->categories()->getNames(CategoryType::Expense));
+    updateCombo(ui->category, backend->categories()->getNames(TransactionType::Expense));
 }
 
 void NewTransactionForm::clearForm()

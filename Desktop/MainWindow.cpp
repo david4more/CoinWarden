@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     model = new TransactionModel(this, backend->currencies()->rates(), backend->currencies()->symbols());
     proxy = new TransactionProxy(this);
+    proxy->setSourceModel(model);
 
     // group MainWindow's buttons
     pages = new QButtonGroup(this);
@@ -65,14 +66,16 @@ void MainWindow::setupTransactionsPage()
     connect(newTransactionForm, &NewTransactionForm::done, this, [this]
         { refresh(); changePage(Page::Transactions); });
 
-    connect(transactionsPage, &TransactionsPage::updateTransactions, this, [this] (QDate from, QDate to)
-        { model->setTransactions(backend->transactions()->get(from, to)); });
+    connect(transactionsPage, &TransactionsPage::updateTransactions, this, [this] (QPair<QDate, QDate> range)
+        { model->setTransactions(backend->transactions()->get(range.first, range.second)); });
 
-    transactionsPage->setFilters(
-        backend->categories()->getNames(CategoryType::Expense),
-        backend->categories()->getNames(CategoryType::Income),
+    connect(transactionsPage, &TransactionsPage::requestFilters, this, [this](TransactionType type){
+        transactionsPage->setFilters(
+        backend->categories()->getNames(type),
         {"Cash", "User cat", "Doom slayer", "Mother's savings" },
         backend->currencies()->codes());
+    });
+
 }
 
 void MainWindow::refresh()

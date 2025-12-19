@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QWidget>
-#include <QDate>
+#include "Utils.h"
 class Backend;
 class TransactionModel;
 class TransactionProxy;
@@ -18,20 +18,23 @@ public:
     explicit TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy,  QWidget* parent = nullptr);
     ~TransactionsPage() override;
 
-    void setFilters(QStringList expenseCategories, QStringList incomeCategories, QStringList accounts, QStringList currencies);
+    void setFilters(QStringList categories, QStringList accounts, QStringList currencies);
     void refresh();
     void onCustomFiltersFinished(int result);
 
 signals:
     void newTransaction();
     void customFilters();
-    void updateTransactions(QDate from, QDate to);
+    void updateTransactions(QPair<QDate, QDate> range);
+    void requestFilters(TransactionType type);
 
 private:
     enum class Filter { Category, Account, Currency, Custom };
-    QStringList expenseCategories, incomeCategories, accounts, currencies;
+    QStringList categories, accounts, currencies;
 
     int month, year;
+    TransactionType type;
+
     TransactionModel* model;
     TransactionProxy* proxy;
     QButtonGroup* types;
@@ -39,7 +42,6 @@ private:
     Ui::TransactionsPage* ui;
 
     void updateFilters();
-    QStringList getCategories();
     QPair<QDate, QDate> getDateRange() const;
     void onComboFilter(QComboBox* combo, Filter type);
     void onTypeClicked(int index);
