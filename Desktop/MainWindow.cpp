@@ -52,6 +52,16 @@ MainWindow::MainWindow(QWidget *parent)
     // connect pages' functionality
     setupTransactionsPageAndForm();
     setupSettingsPage();
+    connect(homePage, &HomePage::requestData, this, [this] {
+        auto from = QDate::currentDate().addMonths(-1);
+        auto to = QDate::currentDate();
+
+        homePage->setData(
+            backend->transactions()->transactionsPerCategory(from, to, TransactionType::Expense),
+            backend->categories()->getLimits(),
+            backend->transactions()->transactionsPerDay(from, to),
+            backend->currencies()->base());
+    });
 
     refresh();
     changePage(Page::Home);

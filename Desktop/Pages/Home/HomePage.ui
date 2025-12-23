@@ -23,7 +23,7 @@
          <string notr="true">font: 600 14pt &quot;Segoe UI&quot;;</string>
         </property>
         <property name="text">
-         <string>Welcome back! Here’s your activity over the last 30 days:</string>
+         <string>Welcome back! Here’s your activity over the last month:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
@@ -35,7 +35,7 @@
         <property name="styleSheet">
          <string notr="true">background-color: blue</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_7">
+        <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
@@ -44,7 +44,58 @@
           </widget>
          </item>
          <item>
-          <widget class="QListView" name="listView_2"/>
+          <widget class="QListWidget" name="listWidget">
+           <item>
+            <property name="text">
+             <string>Salary:</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>..............$985.01</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>............-$130.12</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Family budget:</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>...................$130</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>..............$-13.90</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Some placeholder:</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>......................$0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>.............-$90.50</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>NOT YET IMPLEMENTED</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -95,33 +146,30 @@
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="widget_3" native="true">
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <property name="spacing">
-            <number>3</number>
-           </property>
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QWidget" name="widget_7" native="true">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
              <property name="spacing">
               <number>0</number>
              </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
              <item>
-              <spacer name="incomeSlider">
+              <spacer name="incomeSpacer">
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
@@ -131,12 +179,12 @@
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>40</height>
+                 <height>0</height>
                 </size>
                </property>
               </spacer>
              </item>
-             <item alignment="Qt::AlignmentFlag::AlignHCenter">
+             <item>
               <widget class="Line" name="incomeLine">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -147,7 +195,7 @@
                <property name="minimumSize">
                 <size>
                  <width>20</width>
-                 <height>0</height>
+                 <height>20</height>
                 </size>
                </property>
                <property name="styleSheet">
@@ -168,23 +216,40 @@ background-color: green
               </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <widget class="Line" name="line">
-             <property name="styleSheet">
-              <string notr="true">color: #e0e0e0</string>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Plain</enum>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line_2">
+            <property name="styleSheet">
+             <string notr="true">color: #e0e0e0</string>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Plain</enum>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget_6" native="true">
+            <property name="styleSheet">
+             <string notr="true"/>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
              <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
               <number>0</number>
              </property>
              <item alignment="Qt::AlignmentFlag::AlignHCenter">
@@ -198,7 +263,7 @@ background-color: green
                <property name="minimumSize">
                 <size>
                  <width>20</width>
-                 <height>0</height>
+                 <height>20</height>
                 </size>
                </property>
                <property name="styleSheet">
@@ -228,15 +293,15 @@ background-color: red;</string>
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
-                 <height>40</height>
+                 <height>0</height>
                 </size>
                </property>
               </spacer>
              </item>
             </layout>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </item>
@@ -245,16 +310,23 @@ background-color: red;</string>
         <property name="styleSheet">
          <string notr="true">background-color: blue</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Recent transactions </string>
+            <string>Recent transactions
+placeholder</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QListView" name="listView"/>
+          <widget class="QListWidget" name="listWidget_2">
+           <item>
+            <property name="text">
+             <string>some transactions data</string>
+            </property>
+           </item>
+          </widget>
          </item>
         </layout>
        </widget>

@@ -2,20 +2,58 @@
 #include "ui_HomePage.h"
 #include "../QCustomPlot/qcustomplot.h"
 
-#include "../Backend/Backend.h"
-#include "Managers/TransactionsManager.h"
-#include "Managers/CurrenciesManager.h"
-#include "Managers/CategoriesManager.h"
 #include <QDateTime>
 
 HomePage::~HomePage() { delete ui; }
 
 void HomePage::refresh()
 {
+    emit requestData();
+
     updateFinancesData();
     updateCategoriesData();
+    updateFinancesIndicator();
+}
 
+void HomePage::updateFinancesIndicator()
+{
+    double expenseSum = 0, incomeSum = 0;
+    for (int i = 0; i < dailyData.size(); ++i) {
+        incomeSum += dailyData[i].income;
+        expenseSum += dailyData[i].expense;
+    }
+    auto incomeLayout = qobject_cast<QVBoxLayout*>(ui->incomeLine->parentWidget()->layout());
+    auto expenseLayout = qobject_cast<QVBoxLayout*>(ui->expenseLine->parentWidget()->layout());
+    if (incomeSum > expenseSum) {
+        incomeLayout->setStretch(0, 0);
+        incomeLayout->setStretch(1, 1);
 
+        double ratio = -expenseSum / incomeSum;
+        int ratioFirst = ratio * 100;
+        int ratioSecond = 100 - ratioFirst;
+
+        expenseLayout->setStretch(0, ratioFirst);
+        expenseLayout->setStretch(1, ratioSecond);
+    }
+    else {
+        expenseLayout->setStretch(0, 1);
+        expenseLayout->setStretch(1, 0);
+
+        double ratio = incomeSum / -expenseSum;
+        int ratioFirst = ratio * 100;
+        int ratioSecond = 100 - ratioFirst;
+
+        incomeLayout->setStretch(0, ratioFirst);
+        incomeLayout->setStretch(1, ratioSecond);
+    }
+}
+
+void HomePage::setData(QVector<QPair<QString, double>> t, QMap<QString, double> l, QVector<DailyTransactions> d, QString base)
+{
+    transactionsData = std::move(t);
+    limitsData = std::move(l);
+    dailyData = std::move(d);
+    baseCurrency = std::move(base);
 }
 
 HomePage::HomePage(Backend* backend, QWidget* parent) :
@@ -62,15 +100,13 @@ void HomePage::updateCategoriesData()
     QVector<double> ticks;
     QVector<double> values, limits;
     QVector<QString> labels;
-    auto data = backend->transactions()->transactionsPerCategory(QDate::currentDate().addMonths(-1),QDate::currentDate(), TransactionType::Expense);
-    if (data.size() == 0) return;
+    if (transactionsData.empty()) return;
 
-    auto limitsData = backend->categories()->getLimits();
-    for (int i = 0; i < data.size(); ++i) {
+    for (int i = 0; i < transactionsData.size(); ++i) {
         ticks << i + 1;
-        values << -data[i].second;
+        values << -transactionsData[i].second;
 
-        auto label = data[i].first;
+        auto label = transactionsData[i].first;
         limits << limitsData[label];
         if (label.size() > 10) label = label.left(6) + ".";
         labels << label;
@@ -79,14 +115,13 @@ void HomePage::updateCategoriesData()
     expenseBar->setData(ticks, values);
     limitBar->setData(ticks, limits);
 
-
     QSharedPointer<QCPAxisTickerText> textTicker(new QCPAxisTickerText);
     textTicker->addTicks(ticks, labels);
     plot->xAxis->setTicker(textTicker);
-    plot->xAxis->setRange(0, data.size() + 1);
+    plot->xAxis->setRange(0, transactionsData.size() + 1);
 
     plot->yAxis->setRange(values[0] * -0.05f, values[0] * 1.05f);
-    ui->categoriesPlotLabel->setText("Expense per category in " + backend->currencies()->base());
+    ui->categoriesPlotLabel->setText("Expense per category in " + baseCurrency);
 
     plot->replot();
 }
@@ -125,24 +160,20 @@ void HomePage::updateFinancesData()
 {
     auto* plot = ui->financesPlot;
 
-    auto data = backend->transactions()->transactionsPerDay(
-        QDate::currentDate().addMonths(-1),
-        QDate::currentDate());
-
-    QVector<double> x(data.size()), y0(data.size()), y1(data.size());
-    if (data.size() == 0) return;
-    for (int i = 0; i < data.size(); ++i)
+    QVector<double> x(dailyData.size()), y0(dailyData.size()), y1(dailyData.size());
+    if (dailyData.size() == 0) return;
+    for (int i = 0; i < dailyData.size(); ++i)
     {
-        x[i] = i - data.size() + 1;
-        y0[i] = data[i].income;
-        y1[i] = data[i].expense;
+        x[i] = i - dailyData.size() + 1;
+        y0[i] = dailyData[i].income;
+        y1[i] = dailyData[i].expense;
     }
 
     plot->graph(0)->setData(x, y0);
     plot->graph(1)->setData(x, y1);
 
 
-    int size = data.size() - 1;
+    int size = dailyData.size() - 1;
     double min = *std::min_element(y1.begin(), y1.end());
     double max = *std::max_element(y0.begin(), y0.end());
     plot->xAxis->setRange(size * -1.01, size * 0.01);
