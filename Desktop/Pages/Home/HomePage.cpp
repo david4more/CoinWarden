@@ -14,6 +14,8 @@ void HomePage::refresh()
 {
     updateFinancesData();
     updateCategoriesData();
+
+
 }
 
 HomePage::HomePage(Backend* backend, QWidget* parent) :
@@ -23,8 +25,6 @@ HomePage::HomePage(Backend* backend, QWidget* parent) :
 
     setupFinancesPlot();
     setupCategoriesPlot();
-
-    refresh();
 }
 
 void HomePage::setupCategoriesPlot()
@@ -95,9 +95,11 @@ void HomePage::setupFinancesPlot()
 {
     auto* plot = ui->financesPlot;
 
+    plot->setBackground(QBrush(QColor(30, 30, 30)));
+
     plot->addGraph();
-    plot->graph(0)->setPen(QPen(Qt::blue));
-    plot->graph(0)->setBrush(QBrush(QColor(0, 0, 255, 20)));
+    plot->graph(0)->setPen(QPen(Qt::green));
+    plot->graph(0)->setBrush(QBrush(QColor(0, 255, 0, 20)));
     plot->addGraph();
     plot->graph(1)->setPen(QPen(Qt::red));
     plot->graph(1)->setBrush(QBrush(QColor(255, 0, 0, 20)));
@@ -107,7 +109,16 @@ void HomePage::setupFinancesPlot()
     plot->yAxis2->setVisible(true);
     plot->yAxis2->setTickLabels(false);
 
-    plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    plot->xAxis->setBasePen(QPen(Qt::white));
+    plot->xAxis->setTickPen(QPen(Qt::white));
+    plot->xAxis->setTickLabelColor(Qt::white);
+    plot->xAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
+
+    plot->yAxis->setBasePen(QPen(Qt::white));
+    plot->yAxis->setTickPen(QPen(Qt::white));
+    plot->yAxis->setTickLabelColor(Qt::white);
+    plot->yAxis->setLabelColor(Qt::white);
+    plot->yAxis->grid()->setPen(QPen(QColor(130, 130, 130), 0, Qt::SolidLine));
 }
 
 void HomePage::updateFinancesData()
@@ -120,9 +131,9 @@ void HomePage::updateFinancesData()
 
     QVector<double> x(data.size()), y0(data.size()), y1(data.size());
     if (data.size() == 0) return;
-    for (int i= 0; i < data.size(); ++i)
+    for (int i = 0; i < data.size(); ++i)
     {
-        x[i] = i;
+        x[i] = i - data.size() + 1;
         y0[i] = data[i].income;
         y1[i] = data[i].expense;
     }
@@ -130,7 +141,22 @@ void HomePage::updateFinancesData()
     plot->graph(0)->setData(x, y0);
     plot->graph(1)->setData(x, y1);
 
-    plot->rescaleAxes();
+
+    int size = data.size() - 1;
+    double min = *std::min_element(y1.begin(), y1.end());
+    double max = *std::max_element(y0.begin(), y0.end());
+    plot->xAxis->setRange(size * -1.01, size * 0.01);
+    plot->yAxis->setRange(min * 1.1, max * 1.1);
+
+    QSharedPointer<QCPAxisTickerText> ticker(new QCPAxisTickerText);
+    ticker->addTick(0, "Today");
+    ticker->addTick(-7, "A week ago");
+    ticker->addTick(-14, "Two weeks ago");
+    ticker->addTick(-21, "Three weeks ago");
+    ticker->addTick(-size, "A month ago");
+    ui->financesPlot->xAxis->setTicker(ticker);
+
+    plot->replot();
 }
 
 QVector<double> HomePage::smoothGraph(const QVector<double>& data, const QVector<double>& x)
