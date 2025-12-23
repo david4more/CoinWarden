@@ -56,8 +56,8 @@ void HomePage::setData(QVector<QPair<QString, double>> t, QMap<QString, double> 
     baseCurrency = std::move(base);
 }
 
-HomePage::HomePage(Backend* backend, QWidget* parent) :
-    QWidget(parent), ui(new Ui::HomePage), backend(backend)
+HomePage::HomePage(QWidget* parent) :
+    QWidget(parent), ui(new Ui::HomePage)
 {
     ui->setupUi(this);
 

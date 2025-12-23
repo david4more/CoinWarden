@@ -1,16 +1,13 @@
 #include "CustomFiltersForm.h"
 #include "ui_CustomFiltersForm.h"
 
-#include "../../Backend/Backend.h"
-#include "../../../Backend/Managers/CategoriesManager.h"
-#include "../../Backend/Modules/Utils.h"
 #include "../../Backend/Modules/Model.h"
 #include "../Dialog/MultiSelectDialog.h"
 
 #include <QButtonGroup>
 
-CustomFiltersForm::CustomFiltersForm(Backend* backend, TransactionProxy* proxy, QWidget* parent) :
-    QDialog(parent), ui(new Ui::CustomFiltersForm), backend(backend), proxy(proxy)
+CustomFiltersForm::CustomFiltersForm(TransactionProxy* proxy, QWidget* parent) :
+    QDialog(parent), ui(new Ui::CustomFiltersForm), proxy(proxy)
 {
     ui->setupUi(this);
 

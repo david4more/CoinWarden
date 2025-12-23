@@ -11,7 +11,7 @@ class NewTransactionForm : public QWidget
     Q_OBJECT
 
 public:
-    explicit NewTransactionForm(Backend* backend, QWidget* parent = nullptr);
+    explicit NewTransactionForm(QWidget* parent = nullptr);
     ~NewTransactionForm() override;
 
     void refresh();
@@ -25,7 +25,6 @@ signals:
 
 private:
     QStringList eCategories, iCategories, accounts, currencies;
-    Backend* backend;
     Ui::NewTransactionForm* ui;
 
     void onAddTransaction();

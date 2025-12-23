@@ -2,7 +2,6 @@
 
 #include <QWidget>
 #include "Utils.h"
-class Backend;
 class TransactionModel;
 class TransactionProxy;
 class QButtonGroup;
@@ -15,7 +14,7 @@ class TransactionsPage : public QWidget
     Q_OBJECT
 
 public:
-    explicit TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy,  QWidget* parent = nullptr);
+    explicit TransactionsPage(TransactionModel* model, TransactionProxy* proxy,  QWidget* parent = nullptr);
     ~TransactionsPage() override;
 
     void setFilters(QStringList categories, QStringList accounts, QStringList currencies);
@@ -38,7 +37,6 @@ private:
     TransactionModel* model;
     TransactionProxy* proxy;
     QButtonGroup* types;
-    Backend* backend;
     Ui::TransactionsPage* ui;
 
     QPair<QDate, QDate> getDateRange() const;

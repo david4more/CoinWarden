@@ -30,8 +30,8 @@ public:
 
 TransactionsPage::~TransactionsPage() { delete ui; }
 
-TransactionsPage::TransactionsPage(Backend* backend, TransactionModel* model, TransactionProxy* proxy, QWidget* parent) :
-    QWidget(parent), ui(new Ui::TransactionsPage), backend(backend), model(model), proxy(proxy)
+TransactionsPage::TransactionsPage(TransactionModel* model, TransactionProxy* proxy, QWidget* parent) :
+    QWidget(parent), ui(new Ui::TransactionsPage), model(model), proxy(proxy)
 {
     ui->setupUi(this);
 

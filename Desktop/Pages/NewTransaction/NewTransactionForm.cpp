@@ -12,8 +12,8 @@
 
 NewTransactionForm::~NewTransactionForm() { delete ui; }
 
-NewTransactionForm::NewTransactionForm(Backend* backend, QWidget* parent) :
-    QWidget(parent), ui(new Ui::NewTransactionForm), backend(backend)
+NewTransactionForm::NewTransactionForm(QWidget* parent) :
+    QWidget(parent), ui(new Ui::NewTransactionForm)
 {
     ui->setupUi(this);
 

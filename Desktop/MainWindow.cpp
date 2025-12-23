@@ -5,7 +5,6 @@
 #include "Managers/CurrenciesManager.h"
 #include "Managers/CategoriesManager.h"
 #include "Managers/TransactionsManager.h"
-#include "Managers/AccountsManager.h"
 #include "Modules/Model.h"
 
 #include "Pages/Home/HomePage.h"
@@ -42,8 +41,8 @@ MainWindow::MainWindow(QWidget *parent)
     pages->setExclusive(true);
 
     // initialize pages and connect signals to change the current one
-    ui->pages->addWidget(homePage = new HomePage(backend, ui->pages));
-    ui->pages->addWidget(transactionsPage = new TransactionsPage(backend, model, proxy, ui->pages));
+    ui->pages->addWidget(homePage = new HomePage(ui->pages));
+    ui->pages->addWidget(transactionsPage = new TransactionsPage(model, proxy, ui->pages));
     ui->pages->addWidget(settingsPage = new SettingsPage(ui->pages));
     connect(ui->home, &QToolButton::clicked, this, [this]{ changePage(Page::Home); });
     connect(ui->transactions, &QToolButton::clicked, this, [this]{ changePage(Page::Transactions); });
@@ -69,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::setupTransactionsPageAndForm()
 {
-    ui->pages->addWidget(newTransactionForm = new NewTransactionForm(backend, ui->pages));
+    ui->pages->addWidget(newTransactionForm = new NewTransactionForm(ui->pages));
     connect(transactionsPage, &TransactionsPage::newTransaction, this, [this]{ changePage(Page::NewTransaction); });
     connect(transactionsPage, &TransactionsPage::customFilters, this, [this] { changePage(Page::CustomFilters); });
 
@@ -123,7 +122,7 @@ void MainWindow::changePage(Page p)
         newTransactionForm->clearForm();
         break;
     case Page::CustomFilters: {
-        auto* customFiltersForm = new CustomFiltersForm(backend, proxy, this);
+        auto* customFiltersForm = new CustomFiltersForm(proxy, this);
 
         connect(customFiltersForm, &CustomFiltersForm::finished, transactionsPage, &TransactionsPage::onCustomFiltersFinished);
 

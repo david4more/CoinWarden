@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <QVector>
 #include <../Backend/Modules/Utils.h>
-class Backend;
 class QCustomPlot;
 class QCPBars;
 
@@ -14,7 +13,7 @@ class HomePage : public QWidget
     Q_OBJECT
 
 public:
-    explicit HomePage(Backend* backend, QWidget* parent = nullptr);
+    explicit HomePage(QWidget* parent = nullptr);
     ~HomePage() override;
     void refresh();
     void setData(QVector<QPair<QString, double>> t, QMap<QString, double> l, QVector<DailyTransactions> d, QString base);
@@ -25,7 +24,6 @@ signals:
 private:
     QCPBars* expenseBar;
     QCPBars* limitBar;
-    Backend* backend;
     Ui::HomePage* ui;
 
     QVector<QPair<QString, double>> transactionsData;
