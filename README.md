@@ -18,7 +18,7 @@ Possible improvements:
 
 To launch the project not in Qt Creator, add this to your configuration's
 
-    Environment variables:
+Environment variables:
 
 PATH=(path to Qt)\ Qt \ 6.10.1 \ *Your CPP compiler* \\ _64 \ bin;
 
