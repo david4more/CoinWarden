@@ -44,4 +44,5 @@ private:
     void onTypeClicked(int index);
     void onCustomMonth();
     void onMonthButton(bool next);
+    void updateFilters();
 };

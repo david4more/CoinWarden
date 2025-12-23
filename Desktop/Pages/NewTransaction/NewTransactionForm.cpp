@@ -42,8 +42,17 @@ void NewTransactionForm::setFilters(QStringList eCategories, QStringList iCatego
     this->iCategories = std::move(iCategories);
     this->accounts = std::move(accounts);
     this->currencies = std::move(currencies);
+}
 
-    updateFilters();
+void NewTransactionForm::updateFilters(int index)
+{
+    auto updateCombo = [&](QComboBox* box, const QStringList& list) {
+        box->clear();
+        for (const auto& x : list) box->addItem(x);
+    };
+    updateCombo(ui->category, ui->expense->isChecked() ? eCategories : iCategories);
+    updateCombo(ui->account, accounts);
+    updateCombo(ui->currency, currencies);
 }
 
 void NewTransactionForm::clearForm()
@@ -70,15 +79,4 @@ void NewTransactionForm::onAddTransaction()
     t.note = ui->note->text();
 
     emit addTransaction(std::move(t), ui->expense->isChecked());
-}
-
-void NewTransactionForm::updateFilters(int index)
-{
-    auto updateCombo = [&](QComboBox* box, const QStringList& list) {
-        box->clear();
-        for (const auto& x : list) box->addItem(x);
-    };
-    updateCombo(ui->category, ui->expense->isChecked() ? eCategories : iCategories);
-    updateCombo(ui->account, accounts);
-    updateCombo(ui->currency, currencies);
 }

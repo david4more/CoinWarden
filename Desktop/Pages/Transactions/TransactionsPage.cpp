@@ -80,6 +80,7 @@ void TransactionsPage::refresh()
     ui->date->setText(range.first.toString("MMMM yyyy"));
     emit updateTransactions(range);
     emit requestFilters(type);
+    updateFilters();
 }
 
 void TransactionsPage::setFilters(QStringList categories, QStringList accounts, QStringList currencies)
@@ -87,7 +88,10 @@ void TransactionsPage::setFilters(QStringList categories, QStringList accounts, 
     this->categories = std::move(categories);
     this->accounts = std::move(accounts);
     this->currencies = std::move(currencies);
+}
 
+void TransactionsPage::updateFilters()
+{
     auto updateCombo = [this](QComboBox* combo, const QStringList& items) {
         combo->clear();
         combo->addItem("All");
@@ -168,10 +172,10 @@ void TransactionsPage::onTypeClicked(int index)
         proxy->useFilters({ .isExpense = false }); break;
     }
 
-    if (type != TransactionType::All)
+    if (type != TransactionType::All) {
         emit requestFilters(type);
-    else
         ui->categoryFilter->setCurrentIndex(0);
+    }
 }
 
 void TransactionsPage::onCustomMonth()
