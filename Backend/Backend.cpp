@@ -39,7 +39,7 @@ void Backend::initialize()
     }
     else {
         _categories->init();
-        // _accounts->init();
+        _accounts->init();
         _currencies->init();
     }
 
@@ -62,7 +62,7 @@ bool Backend::setupDefault()
     bool defSetup = (_categories->setupDefault() && _currencies->setupDefault() && _accounts->setupDefault());
 
     _categories->init();
-    // _budgets->init();
+    _accounts->init();
     _currencies->init();
 
     return defSetup && generateTransactions();
@@ -77,9 +77,9 @@ bool Backend::generateTransactions()
     query.clear();
 
     QVector<QString> currencies = _currencies->codes();
-
     QVector<QString> expenseCategories = _categories->getNames(TransactionType::Expense);
     QVector<QString> incomeCategories = _categories->getNames(TransactionType::Income);
+    QVector<QString> accounts = _accounts->getNames();
 
     //QVector<int> budgets;
     //query.exec("select id from budgets");
@@ -98,7 +98,8 @@ bool Backend::generateTransactions()
 
         QString currency = currencies[rand() % currencies.size()];
         QDateTime dateTime = QDateTime::currentDateTime().addDays(-(rand() % 30));
-        QString budget = "User 1";
+        QString account = accounts[rand() % accounts.size()];
+        qDebug() << account;
 
         float amount;
         if (isExpense)
@@ -107,8 +108,10 @@ bool Backend::generateTransactions()
             amount = incomeRange.first + rand() % incomeRange.second + (rand() % 100) / 100.0;
 
 
-        if (!_transactions->add(std::move(Transaction(amount, currency, dateTime,
-            _categories->findId(category, isExpense), budget)))) return false;
+        if (!_transactions->add(std::move(Transaction(
+            amount, currency, dateTime,
+            _categories->findId(category, isExpense),
+            category, account)))) return false;
     }
 
     if (!db.commit()) { qDebug() << "Failed to commit transaction"; return false; }

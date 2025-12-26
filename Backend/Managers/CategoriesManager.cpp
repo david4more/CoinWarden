@@ -36,7 +36,7 @@ bool CategoriesManager::init()
 
     query.prepare("SELECT id, name, isExpense, color FROM categories");
 
-    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::get query"; return {}; }
+    if (!query.exec()) { qDebug() << "Failed to execute CategoriesManager::init query"; return {}; }
 
     while (query.next())
         _categories.push_back(

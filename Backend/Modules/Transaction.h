@@ -31,8 +31,8 @@ public:
     QString account;
 
     Transaction() = default;
-    Transaction(double amount, QString currency, QDateTime dateTime, int category, QString categoryName, QString budget = "Main") :
-        amount(amount), currency(currency), dateTime(dateTime), category(category), categoryName(categoryName), account(budget) {}
+    Transaction(double amount, QString currency, QDateTime dateTime, int category, QString categoryName, QString account) :
+        amount(amount), currency(currency), dateTime(dateTime), category(category), categoryName(categoryName), account(account) {}
 
     explicit operator bool() const {
         return !(amount == 0.f || currency.isEmpty() || dateTime.isNull() || category < 0 || account.isEmpty());

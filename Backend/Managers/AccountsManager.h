@@ -6,26 +6,26 @@ class QSqlDatabase;
 const QString accountsTable = R"(
     CREATE TABLE accounts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
-    isInternal BOOLEAN NOT NULL)
+    name TEXT UNIQUE NOT NULL)
 )";
 
 class Account
 {
     int id;
     QString name;
-    bool isInternal;
 };
 
 class BACKEND_EXPORT AccountsManager
 {
     friend class Backend;
     bool setupDefault();
+    bool init();
 
     QSqlDatabase& db;
-    QStringList _names;
+    QStringList names;
 
 public:
-    explicit AccountsManager(QSqlDatabase& db) : db(db), _names({ "User1", "User2", "User cat"}) {}
-    QStringList names() const { return _names; }
+    explicit AccountsManager(QSqlDatabase& db) : db(db) {}
+    QStringList getNames() const { return names; }
+    bool add(QString name);
 };

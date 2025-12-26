@@ -16,6 +16,8 @@
 #include <QButtonGroup>
 #include <QMessageBox>
 
+#include "Managers/AccountsManager.h"
+
 
 MainWindow::~MainWindow() { delete ui; }
 MainWindow::MainWindow(QWidget *parent)
@@ -78,7 +80,7 @@ void MainWindow::setupTransactionsPageAndForm()
     connect(transactionsPage, &TransactionsPage::requestFilters, this, [this](TransactionType type){
         transactionsPage->setFilters(
         backend->categories()->getNames(type),
-        {"Cash", "User cat", "Doom slayer", "Mother's savings" },
+        backend->accounts()->getNames(),
         backend->currencies()->codes());
     });
 
@@ -95,7 +97,7 @@ void MainWindow::setupTransactionsPageAndForm()
         newTransactionForm->setFilters(
             backend->categories()->getNames(TransactionType::Expense),
             backend->categories()->getNames(TransactionType::Income),
-            { "User cat. Noone else is needed", "Maybe a User Spider" },
+            backend->accounts()->getNames(),
             backend->currencies()->codes());
     });
 }

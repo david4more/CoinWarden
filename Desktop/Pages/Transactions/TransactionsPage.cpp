@@ -176,6 +176,11 @@ void TransactionsPage::onTypeClicked(int index)
         emit requestFilters(type);
         ui->categoryFilter->setCurrentIndex(0);
     }
+    else {
+        ui->categoryFilter->setCurrentIndex(0);
+        ui->currencyFilter->setCurrentIndex(0);
+        ui->accountFilter->setCurrentIndex(0);
+    }
 }
 
 void TransactionsPage::onCustomMonth()
