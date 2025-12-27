@@ -1,7 +1,7 @@
 #include "TransactionsPage.h"
 #include "ui_TransactionsPage.h"
 
-#include "../Dialog/MultiSelectDialog.h"
+#include "../MultiSelect/MultiSelectDialog.h"
 #include "../../../Backend/Modules/Model.h"
 #include "../../../Backend/Modules/Utils.h"
 
@@ -172,15 +172,12 @@ void TransactionsPage::onTypeClicked(int index)
         proxy->useFilters({ .isExpense = false }); break;
     }
 
-    if (type != TransactionType::All) {
+    if (type != TransactionType::All)
         emit requestFilters(type);
-        ui->categoryFilter->setCurrentIndex(0);
-    }
-    else {
-        ui->categoryFilter->setCurrentIndex(0);
-        ui->currencyFilter->setCurrentIndex(0);
-        ui->accountFilter->setCurrentIndex(0);
-    }
+
+    ui->categoryFilter->setCurrentIndex(0);
+    ui->currencyFilter->setCurrentIndex(0);
+    ui->accountFilter->setCurrentIndex(0);
 }
 
 void TransactionsPage::onCustomMonth()

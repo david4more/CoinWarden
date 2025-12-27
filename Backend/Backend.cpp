@@ -99,7 +99,6 @@ bool Backend::generateTransactions()
         QString currency = currencies[rand() % currencies.size()];
         QDateTime dateTime = QDateTime::currentDateTime().addDays(-(rand() % 30));
         QString account = accounts[rand() % accounts.size()];
-        qDebug() << account;
 
         float amount;
         if (isExpense)

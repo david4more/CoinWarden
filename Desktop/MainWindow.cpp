@@ -11,7 +11,7 @@
 #include "Pages/Transactions/TransactionsPage.h"
 #include "Pages/Settings/SettingsPage.h"
 #include "Pages/NewTransaction/NewTransactionForm.h"
-#include "Pages/CustomFilters/CustomFiltersForm.h"
+#include "CustomFilters/CustomFiltersForm.h"
 
 #include <QButtonGroup>
 #include <QMessageBox>

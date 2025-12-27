@@ -2,7 +2,7 @@
 #include "ui_CustomFiltersForm.h"
 
 #include "../../Backend/Modules/Model.h"
-#include "../Dialog/MultiSelectDialog.h"
+#include "../MultiSelect/MultiSelectDialog.h"
 
 #include <QButtonGroup>
 
